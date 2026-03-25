@@ -1,0 +1,25 @@
+#BannerSection .slick-dots{
+    bottom: 10px;
+}
+
+#BannerSection .slick-dots li.slick-active button:before {
+    opacity: .75;
+    color: red;
+}
+
+#BannerSection .slick-dots li button:before {
+    content: "•";
+    text-align: center;
+    opacity: 1;
+    color: #000;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    width: 1;
+    height: 20px;
+    font-family: slick;
+    font-size: 15px;
+    line-height: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
