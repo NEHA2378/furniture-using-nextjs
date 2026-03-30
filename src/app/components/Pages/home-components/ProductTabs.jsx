@@ -42,7 +42,7 @@ function ProductCard({data}) {
     return (
 
 
-        <div className="bg-white shadow-md rounded-xl overflow-hidden group">
+        <div className="bg-white shadow-md rounded-xl overflow-hidden group mx-auto max-w-[1320px]">
 
             <div className="relative">
                 <a href="#">
