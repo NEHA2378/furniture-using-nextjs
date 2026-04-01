@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 export default function Footer() {
@@ -41,19 +42,19 @@ export default function Footer() {
         <h3 className="text-lg font-semibold mb-4">Information</h3>
         <ul className="space-y-2">
           <li>
-            <a href="#" className="hover:text-blue-600">
+            <Link href="/about-us" className="hover:text-blue-600">
               About Us
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#" className="hover:text-blue-600">
+            <Link href="/contact-us" className="hover:text-blue-600">
               Contact Us
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#" className="hover:text-blue-600">
+            <Link href="/frequent-questions" className="hover:text-blue-600">
               Frequently Questions
-            </a>
+            </Link>
           </li>
         </ul>
       </div>
@@ -67,14 +68,14 @@ export default function Footer() {
             </a>
           </li>
           <li>
-            <a href="#" className="hover:text-blue-600">
+            <Link href="/my-whishlist" className="hover:text-blue-600">
               Wishlist
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#" className="hover:text-blue-600">
+            <Link href="/shopping-cart" className="hover:text-blue-600">
               Cart
-            </a>
+            </Link>
           </li>
           <li>
             <a href="#" className="hover:text-blue-600">

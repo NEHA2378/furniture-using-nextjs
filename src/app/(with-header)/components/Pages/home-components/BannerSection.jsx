@@ -13,7 +13,7 @@ export default function BannerSection() {
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
-        autoplayApeed: 1000
+        autoplaySpeed: 1000
     };
     return (
         <div className='overflow-hidden' id='BannerSection'>
