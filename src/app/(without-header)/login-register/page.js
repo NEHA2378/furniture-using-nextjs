@@ -1,6 +1,7 @@
 "use client"
+import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
-import Breadcrumb from '../components/common/Breadcrumb'
+
 
 export default function Auth() {
     let [otpStatus, setOtpStatus] = useState(false)
@@ -9,25 +10,32 @@ export default function Auth() {
         e.preventDefault()
         setOtpStatus(true)
     }
+
+    let router=useRouter()
+    let handlelogin=(e)=>{
+        e.preventDefault()
+        alert("Login Succesfully")
+        router.push('/')
+    }
     return (
         <div>
-            <Breadcrumb title={'My Account'} />
+           
             <div className='max-w-[1320px] mx-auto py-10 grid grid-cols-2 gap-5'>
                 <div className='p-5 shadow-sm border border-[#ccc]'>
                     <h2 className='font-bold text-2xl mb-5'>Login</h2>
-                    <form>
+                    <form onSubmit={handlelogin}>
                         <div className='mt-5'>
                             <label className='block mb-2 font-semibold'>
                                 Username or Email Address {""}
                             </label>
-                            <input className='w-full border p-2 outline-none' type='text' />
+                            <input className='w-full border p-2 outline-none' type='text' required={true}/>
                         </div>
 
                         <div className='mt-5'>
                             <label className='block mb-2 font-semibold'>
                                 Password
                             </label>
-                            <input className='w-full border p-2 outline-none' type='password' />
+                            <input className='w-full border p-2 outline-none' type='password' required={true}/>
                         </div>
 
                         <div className='mt-5'>

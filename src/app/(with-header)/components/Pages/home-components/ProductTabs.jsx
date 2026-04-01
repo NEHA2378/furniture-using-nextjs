@@ -1,6 +1,6 @@
 
 "use client"
-import { productData } from '@/app/Data/ProductData'
+import { productData } from '@/app/(with-header)/Data/ProductData'
 import React, { useState } from 'react'
 
 export default function ProductTabs() {

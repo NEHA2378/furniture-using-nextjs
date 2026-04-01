@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 export default function Header() {
@@ -119,6 +120,11 @@ export default function Header() {
             <a href="#" className="hover:text-blue-600">
               Contact Us
             </a>
+          </li>
+          <li>
+            <Link href="/product-server" className="hover:text-blue-600">
+              Product Server
+            </Link>
           </li>
         </ul>
       </nav>
