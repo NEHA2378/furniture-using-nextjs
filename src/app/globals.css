@@ -24,3 +24,26 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Sidebar Scrollbar */
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #f3f4f6; /* light gray */
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #da8a19; /* teal */
+  border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #da8a19;
+}
+
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #da8a19 #f3f4f6;
+}

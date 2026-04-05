@@ -82,7 +82,7 @@ export default function Header() {
                     <p className="font-semibold">Tables</p>
                     <ul className="text-sm mt-2 space-y-1">
                       <li>
-                        <a href="#">Side and End Tables</a>
+                        <Link href="/categories">Side and End Tables</Link>
                       </li>
                       <li>
                         <a href="#">Nest Of Tables</a>

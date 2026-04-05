@@ -123,24 +123,24 @@ export default function Footer() {
     <div className="border-t py-4">
       <ul className="flex flex-wrap justify-center gap-4 text-sm">
         <li>
-          <a href="#" className="hover:text-blue-600">
+          <Link href="/" className="hover:text-blue-600">
             Home
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#" className="hover:text-blue-600">
+          <Link href="/online-store" className="hover:text-blue-600">
             Online Store
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#" className="hover:text-blue-600">
+          <Link href="/privacy-policies" className="hover:text-blue-600">
             Privacy Policy
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#" className="hover:text-blue-600">
+          <Link href="/terms-of-use" className="hover:text-blue-600">
             Terms Of Use
-          </a>
+          </Link>
         </li>
       </ul>
     </div>
