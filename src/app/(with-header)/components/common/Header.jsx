@@ -1,7 +1,21 @@
+"use client"
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 export default function Header() {
+
+  const userLogin = useSelector((state) => state.login.userLogin)
+
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  //Prevent hydration mismatch
+  if (!mounted) return null
+
   return (
     <div>
 
@@ -14,9 +28,24 @@ export default function Header() {
                 <p>Contact us 24/7 : +91-98745612330 / furniture@gmail.com</p>
               </div>
               <div>
-                <Link href="/login-register" className="hover:text-blue-600">
-                  Login / Register
-                </Link>
+                {
+                  userLogin
+                    ?
+                    <Link href="/" className="hover:text-blue-600">
+                      <ul className='auth d-flex justifiy-content-end'>
+                        <li>Logout</li>
+                      </ul>
+                    </Link>
+
+                    :
+                    <Link href="/login-register" className="hover:text-blue-600">
+                      <ul className='auth flex justifiy-end'>
+                        <li>Login &nbsp;/ </li>
+                        <li>Register</li>
+                      </ul>
+                    </Link>
+                }
+
               </div>
             </div>
           </div>
