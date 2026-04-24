@@ -78,9 +78,9 @@ export default function Footer() {
             </Link>
           </li>
           <li>
-            <a href="#" className="hover:text-blue-600">
+            <Link href="/checkout" className="hover:text-blue-600">
               Checkout
-            </a>
+            </Link>
           </li>
         </ul>
       </div>

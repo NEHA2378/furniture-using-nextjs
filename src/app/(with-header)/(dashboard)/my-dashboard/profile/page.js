@@ -6,8 +6,6 @@ import Cookies from 'js-cookie';
 
 export default function page() {
 
-    let apiBaseUrl = process.env.NEXT_PUBLIC_APIBASEPATH;
-
     const [formData, setFormData] = useState({
         title: "",
         name: "",
@@ -27,6 +25,7 @@ export default function page() {
     const [selectedTitle, setSelectedTitle] = useState('')
     const [userProfile, setUserProfile] = useState('')
 
+    let apiBaseUrl = process.env.NEXT_PUBLIC_APIBASEPATH;
 
     useEffect(() => {
         axios.post(`${apiBaseUrl}/user/view-profile`, {}, {
