@@ -19,14 +19,14 @@ export default function checkout() {
             discount_amount: 1000,
             net_amount: 4000,
             shipping_address: { name: 'test' },
-            billing_address: { 
-                name : e.target.billingName.value,
-                email : e.target.billingEmail.value,
-                mobile_number : e.target.billingMobile.value,
-                address : e.target.billingAddress.value,
-                countr : e.target.country.value,
-                state : e.target.state.value,
-                city:  e.target.city.value,
+            billing_address: {
+                name: e.target.billingName.value,
+                email: e.target.billingEmail.value,
+                mobile_number: e.target.billingMobile.value,
+                address: e.target.billingAddress.value,
+                country: e.target.country.value,
+                state: e.target.state.value,
+                city: e.target.city.value,
             },
             mobile_number: e.target.mobile_number.value,
             name: e.target.name.value
@@ -38,7 +38,7 @@ export default function checkout() {
             }
         })
             .then((result) => {
-                handlePayment(result.data._data)
+                handlePayment(result.data._orderInfo)
                 // toast.success('Order Placed')
                 // if (res.data._status) {
                 //     setUserProfile(res.data._userProfile)
@@ -63,8 +63,17 @@ export default function checkout() {
             description: "Test Transaction",
             order_id: orderInfo.id, // Generate order_id on server
             handler: (response) => {
-                console.log(response);
-                alert("Payment Successful!");
+                console.log("Payment Success");
+                console.log("Order ID:", response.razorpay_order_id);
+                console.log("Payment ID:", response.razorpay_payment_id);
+                console.log("Signature:", response.razorpay_signature);
+
+                orderStatusChange(
+                    response.razorpay_payment_id,
+                    response.razorpay_order_id
+                );
+
+                // alert("Payment Successful!");
             },
             prefill: {
                 name: "John Doe",
@@ -78,14 +87,44 @@ export default function checkout() {
 
         const razorpayInstance = new Razorpay(options);
 
-        razorpayInstance.on("payment.failed", function (response){
-            toast.error('payment failed !!')
-            console.log(response);
-            orderStatusChange(response.error.metadata.payment_id, response.error.metadata.order_id)
-        })
+        razorpayInstance.on("payment.failed", function (response) {
+            console.log("Payment Failed");
+            console.log("FULL RESPONSE:", response);
+
+            orderStatusChange(
+                response.error.metadata.payment_id,
+                response.error.metadata.order_id
+            );
+        });
 
         razorpayInstance.open();
     };
+
+    const orderStatusChange = (payment_id, order_id) => {
+        // e.preventDefault();
+
+        const dataSave = {
+            payment_id: payment_id,
+            order_id: order_id,
+        }
+
+        axios.post(`${apiBaseUrl}/user/order-status-change`, dataSave, {
+            headers: {
+                'Authorization': `Bearer ${Cookies.get('user_login')}`
+            }
+        })
+            .then((result) => {
+                if (result.data._data.payment_status == 2) { toast.success('Order Placed') }
+                else {
+                    toast.error('Payment failed !!');
+                }
+            })
+            .catch((error) => {
+                toast.error("Something went wrong")
+                console.log(error.response.data);
+                
+            })
+    }
 
     return (
         <div className='max-w-[1320px] mx-auto py-10'>

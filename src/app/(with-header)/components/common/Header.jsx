@@ -2,12 +2,24 @@
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { IoMenuSharp } from "react-icons/io5";
+import { FaHeart } from "react-icons/fa";
+import { FaCaretDown } from "react-icons/fa";
+import { FaCaretUp } from "react-icons/fa";
+import { ImCross } from "react-icons/im";
+import { GiShoppingCart } from "react-icons/gi";
 
 export default function Header() {
 
   const userLogin = useSelector((state) => state.login.userLogin)
 
   const [mounted, setMounted] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState(null);
+
+  const toggleMenu = (menu) => {
+    setOpenMenu(prev => (prev === menu ? null : menu));
+  };
 
   useEffect(() => {
     setMounted(true)
@@ -72,22 +84,17 @@ export default function Header() {
                   <button className="px-3 bg-gray-200">🔍</button>
                 </form>
                 {/* Wishlist */}
-                <span>❤️</span>
+                <span><FaHeart /></span>
                 {/* Cart */}
-                <div className="relative group">
+                <div className='relative'>
                   <button className="flex items-center gap-1">
-                    🛒 <span>Rs. 0.00</span>
+                    <GiShoppingCart />
+                    <span className="absolute -top-3 -right-2 bg-red-500 text-white text-xs px-1 rounded-full">
+                      0
+                    </span>
+                    <span>Rs. 0.00</span>
                   </button>
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 rounded-full">
-                    0
-                  </span>
-                  {/* Mini Cart */}
-                  <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg border p-4 hidden group-hover:block">
-                    <h3 className="font-semibold mb-2">Cart</h3>
-                    <p className="text-center text-gray-500">
-                      Your shopping cart is empty!
-                    </p>
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -97,6 +104,12 @@ export default function Header() {
         <div className="sticky top-0 bg-white shadow z-50">
           <div className="max-w-7xl mx-auto px-4">
             <nav className="flex justify-between py-3">
+              <button
+                className="lg:hidden text-2xl"
+                onClick={() => setMenuOpen(!menuOpen)}
+              >
+                <IoMenuSharp />
+              </button>
               {/* Menu */}
               <ul className="hidden lg:flex gap-6 font-medium">
                 <li>
@@ -106,42 +119,66 @@ export default function Header() {
                 </li>
                 {/* Living Dropdown */}
                 <li className="relative group">
-                  <button>Living ▼</button>
+                  <button className='flex items-center'>Living <FaCaretDown /></button>
                   <div className="absolute hidden group-hover:block bg-white shadow p-4 w-64">
-                    <p className="font-semibold">Tables</p>
-                    <ul className="text-sm mt-2 space-y-1">
-                      <li>
-                        <Link href="/categories">Side and End Tables</Link>
-                      </li>
-                      <li>
-                        <a href="#">Nest Of Tables</a>
-                      </li>
-                      <li>
-                        <a href="#">Coffee Tables</a>
-                      </li>
-                    </ul>
+                    <Link className='font-semibold block' href="/tables">Side and End Tables</Link>
+                    <Link className='font-semibold block' href="/mirrors">Mirror</Link>
+                    <Link className='font-semibold block' href="/livings">Living Storage/ Collections</Link>
                   </div>
                 </li>
                 {/* Sofa Dropdown */}
                 <li className="relative group">
-                  <button>Sofa ▼</button>
-                  <div className="absolute hidden group-hover:block bg-white shadow p-4 w-64">
-                    <p className="font-semibold">Sofa Sets</p>
-                    <ul className="text-sm mt-2 space-y-1">
-                      <li>
-                        <a href="#">1 Seater</a>
-                      </li>
-                      <li>
-                        <a href="#">2 Seater</a>
-                      </li>
-                      <li>
-                        <a href="#">3 Seater</a>
-                      </li>
-                    </ul>
+                  <button className='flex items-center'>Sofa <FaCaretDown /></button>
+                  <div className="absolute hidden group-hover:grid bg-white shadow p-4 w-[600px] grid grid-cols-3">
+                    <div className='col'>
+                      <p className="font-semibold">Sofa Cum Bed</p>
+                      <ul className="text-sm mt-2 space-y-1">
+                        <li>
+                          <Link href="/categories/sofa-cum-bed">Wooden Sofa Cum Bed</Link>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className='col'>
+                      <p className="font-semibold">Sofa Sets</p>
+                      <ul className="text-sm mt-2 space-y-1">
+                        <li>
+                          <Link href="/categories/l-shape-sofa">L Shape Sofa</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/1-seater-sofa">1 Seater Sofa</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/2-seater-sofa">2 Seater Sofa</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/3-seater-sofa">3 Seater Sofa</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/wooden-sofa-set">Wooden Sofa Sets</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/sofa-cover">Sofa Cover</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/normal">Normal</Link>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className='col'>
+                      <p className="font-semibold">Swing Jhula</p>
+                      <ul className="text-sm mt-2 space-y-1">
+                        <li>
+                          <a href="#">Wooden Jhula</a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
+
                 </li>
                 <li className="relative group">
-                  <button>Pages ▼</button>
+                  <button className='flex items-center'>Pages <FaCaretDown /></button>
                   <div className="absolute hidden group-hover:block bg-white shadow p-4 w-64">
                     <ul className="text-sm mt-2 space-y-1">
                       <li>
@@ -171,6 +208,105 @@ export default function Header() {
                 </li>
               </ul>
             </nav>
+
+            {menuOpen && (
+              <div
+                className="fixed inset-0 bg-black/40 z-40"
+                onClick={() => setMenuOpen(false)}
+              />
+            )}
+
+            <div
+              className={`fixed top-0 right-0 h-full w-[280px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${menuOpen ? "translate-x-0" : "translate-x-full"
+                }`}
+            >
+              <div className="p-4 space-y-4">
+
+                {/* Close Button */}
+                <button
+                  className="text-xl mb-2"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <ImCross />
+                </button>
+
+                {/* Home */}
+                <div>
+                  <Link
+                    href="/"
+                    onClick={() => setMenuOpen(false)}
+                    className="font-semibold"
+                  >
+                    Home
+                  </Link>
+                </div>
+
+                {/* Living Menu */}
+                <div>
+                  <button
+                    className="w-full flex justify-between items-center font-semibold"
+                    onClick={() => toggleMenu("living")}
+                  >
+                    Living
+                    {openMenu === "living" ? <FaCaretUp /> : <FaCaretDown />}
+                  </button>
+
+                  <div className={`overflow-hidden transition-all duration-300 ${openMenu === "living" ? "max-h-40 mt-2" : "max-h-0"
+                    }`}>
+                    <ul className="pl-4 text-sm space-y-1">
+                      <li>
+                        <Link href="/categories" onClick={() => setMenuOpen(false)}>
+                          Side and End Tables
+                        </Link>
+                      </li>
+                      <li>Nest Of Tables</li>
+                      <li>Coffee Tables</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Sofa Menu */}
+                <div>
+                  <button
+                    className="w-full flex justify-between items-center font-semibold"
+                    onClick={() => toggleMenu("sofa")}
+                  >
+                    Sofa
+                    {openMenu === "sofa" ? <FaCaretUp /> : <FaCaretDown />}
+                  </button>
+
+                  <div className={`overflow-hidden transition-all duration-300 ${openMenu === "sofa" ? "max-h-40 mt-2" : "max-h-0"
+                    }`}>
+                    <ul className="pl-4 text-sm space-y-1">
+                      <li>1 Seater</li>
+                      <li>2 Seater</li>
+                      <li>3 Seater</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Other Links */}
+                <div>
+                  <Link className='font-semibold' href="/about-us" onClick={() => setMenuOpen(false)}>
+                    About Us
+                  </Link>
+                </div>
+
+                <div>
+                  <Link className='font-semibold' href="/shopping-cart" onClick={() => setMenuOpen(false)}>
+                    Cart
+                  </Link>
+                </div>
+
+                <div>
+                  <Link className='font-semibold' href="/contact-us" onClick={() => setMenuOpen(false)}>
+                    Contact Us
+                  </Link>
+                </div>
+
+              </div>
+
+            </div>
           </div>
         </div>
       </header>
