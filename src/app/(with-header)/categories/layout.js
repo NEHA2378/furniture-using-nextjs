@@ -24,23 +24,24 @@ export default function CategoryLayout({ children }) {
         </div>
 
         {/* Layout */}
-        <div className='grid grid-cols-1 lg:grid-cols-[250px_auto] gap-4'>
+        <div className='grid grid-cols-1 lg:grid-cols-[250px_auto] gap-6'>
 
           {/* Sidebar */}
-          <CategorySidebar
-            filters={filters}
-            setFilters={setFilters}
-          />
+          <div className="order-2 lg:order-1">
+            <CategorySidebar
+              filters={filters}
+              setFilters={setFilters}
+            />
+          </div>
 
           {/* Page Content */}
-          <div className='p-4 order-1 lg:order-2'>
+          <div className='p-4 order-1 lg:order-2 min-h-[500px]'>
             {children}
           </div>
 
         </div>
       </div>
-      
+
     </FilterContext.Provider>
-    
   );
 }

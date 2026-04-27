@@ -48,7 +48,7 @@ export default function CategorySidebar({ filters, setFilters }) {
         <div className='p-4 order-2 lg:order-1'>
 
             {/* TITLE FILTER */}
-            <div className='max-h-[450px] overflow-y-scroll custom-scroll'>
+            <div className='max-h-[450px] overflow-y-scroll overflow-x-hidden custom-scroll'>
                 <h2 className='font-bold text-2xl mb-4'>Title</h2>
 
                 {titleFilters.map((item, index) => (
