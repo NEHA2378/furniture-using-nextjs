@@ -1,8 +1,9 @@
-"use client"
+"use client";
 
 import { useState } from "react";
-import CategorySidebar from "@/app/components/common/CategorySidebar";
-import Breadcrumb from "@/app/components/common/Breadcrumb";
+import Breadcrumb from "../components/common/Breadcrumb";
+import CategorySidebar from "../components/common/CategorySidebar";
+import { FilterContext } from "./FilterContext";
 
 export default function CategoryLayout({ children }) {
 
@@ -13,21 +14,33 @@ export default function CategoryLayout({ children }) {
   });
 
   return (
-    <div className='mb-10 max-w-[1320px] mx-auto'>
+    <FilterContext.Provider value={{ filters, setFilters }}>
 
-      <div className="mb-5 text-center">
-        <Breadcrumb title="Product Listing" />
-      </div>
+      <div className='mb-10 max-w-[1320px] mx-auto'>
 
-      <div className='grid grid-cols-1 lg:grid-cols-[250px_auto] gap-4'>
-
-        <CategorySidebar filters={filters} setFilters={setFilters} />
-
-        <div className='p-4'>
-          {children({ filters })}
+        {/* Breadcrumb */}
+        <div className="mb-5 text-center">
+          <Breadcrumb title="Product Listing" />
         </div>
 
+        {/* Layout */}
+        <div className='grid grid-cols-1 lg:grid-cols-[250px_auto] gap-4'>
+
+          {/* Sidebar */}
+          <CategorySidebar
+            filters={filters}
+            setFilters={setFilters}
+          />
+
+          {/* Page Content */}
+          <div className='p-4 order-1 lg:order-2'>
+            {children}
+          </div>
+
+        </div>
       </div>
-    </div>
+      
+    </FilterContext.Provider>
+    
   );
 }
