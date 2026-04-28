@@ -13,6 +13,7 @@ export default async function Page({ params }) {
     "sofa-cum-bed": "Wooden Sofa Cum Bed",
     "wooden-sofa-set": "Wooden Sofa Sets",
     "normal": "Normal",
+    "wooden-jhula": "Wooden Jhula"
   };
 
   const categoryTitle = categoryMap[slug];
@@ -36,5 +37,6 @@ export function generateStaticParams() {
     { slug: "sofa-cum-bed" },
     { slug: "wooden-sofa-set" },
     { slug: "normal" },
+    { slug: "wooden-jhula"}
   ];
 }

@@ -3,10 +3,15 @@
 import { useState, useMemo } from "react";
 import { useFilters } from "@/app/(with-header)/categories/FilterContext";
 import { FaHeart } from "react-icons/fa";
+import { useFavorites } from "../../context/FavoriteContext";
 
 export default function CategoryClient({ products }) {
+
+    const { toggleFavorite, isFavorite } = useFavorites();
     const { filters } = useFilters();
     const [sortOption, setSortOption] = useState("");
+
+
 
     const finalProducts = useMemo(() => {
         let result = [...products];
@@ -85,12 +90,12 @@ export default function CategoryClient({ products }) {
             </div>
 
             {/* PRODUCTS */}
-            <div className="mb-10 max-w-[1320px] mx-auto">
-                <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
+            <div className="mb-10 mx-auto">
+                <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 w-full">
 
                     {finalProducts.length === 0 ? (
 
-                        <div className="my-10 col-span-3">
+                        <div className="col-span-3 min-h-[500px] flex flex-col items-center justify-center">
                             <img
                                 src="https://wscubetech.co/Assignments/furniture/public/frontend/img/icon/my-Order.jpg"
                                 className="rounded-md mx-auto"
@@ -132,7 +137,13 @@ export default function CategoryClient({ products }) {
                                 </p>
 
                                 <div className="flex items-center justify-between mt-4">
-                                    <button className="p-2 border rounded-full hover:bg-gray-100">
+                                    <button
+                                        onClick={() => toggleFavorite(product)}
+                                        className={`p-2 border rounded-full transition ${isFavorite(product.id)
+                                            ? "bg-red-500 text-white"
+                                            : "hover:bg-gray-100"
+                                            }`}
+                                    >
                                         <FaHeart />
                                     </button>
 

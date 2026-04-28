@@ -14,34 +14,34 @@ export default function CategoryLayout({ children }) {
   });
 
   return (
-    <FilterContext.Provider value={{ filters, setFilters }}>
+      <FilterContext.Provider value={{ filters, setFilters }}>
 
-      <div className='mb-10 max-w-[1320px] mx-auto'>
+        <div className='mb-10 max-w-[1320px] w-full mx-auto'>
 
-        {/* Breadcrumb */}
-        <div className="mb-5 text-center">
-          <Breadcrumb title="Product Listing" />
-        </div>
-
-        {/* Layout */}
-        <div className='grid grid-cols-1 lg:grid-cols-[250px_auto] gap-6'>
-
-          {/* Sidebar */}
-          <div className="order-2 lg:order-1">
-            <CategorySidebar
-              filters={filters}
-              setFilters={setFilters}
-            />
+          {/* Breadcrumb */}
+          <div className="mb-5 text-center">
+            <Breadcrumb title="Product Listing" />
           </div>
 
-          {/* Page Content */}
-          <div className='p-4 order-1 lg:order-2 min-h-[500px]'>
-            {children}
+          {/* Layout */}
+          <div className='grid grid-cols-1 lg:grid-cols-[250px_auto] gap-6'>
+
+            {/* Sidebar */}
+            <div className="order-2 lg:order-1">
+              <CategorySidebar
+                filters={filters}
+                setFilters={setFilters}
+              />
+            </div>
+
+            {/* Page Content */}
+            <div className='p-4 order-1 lg:order-2 min-h-[500px]'>
+              {children}
+            </div>
+
           </div>
-
         </div>
-      </div>
 
-    </FilterContext.Provider>
+      </FilterContext.Provider>
   );
 }

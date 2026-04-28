@@ -4,7 +4,7 @@ import { productData } from '@/app/(with-header)/Data/ProductData'
 import React, { useState } from 'react'
 import { FaHeart } from "react-icons/fa";
 
-export default function OnlineStore() {
+export default function Mirrors() {
 
     const { toggleFavorite, isFavorite } = useFavorites();
 
@@ -99,6 +99,10 @@ export default function OnlineStore() {
         "Mulberry Wood",
         "JackFruit"
     ];
+
+    const mirrorProducts = sortedProducts.filter(product =>
+        product.title.toLowerCase().includes("mirror")
+    );
 
     return (
         <div className='mb-10 max-w-[1320px] mx-auto'>
@@ -264,7 +268,7 @@ export default function OnlineStore() {
 
                         <div className='grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6'>
 
-                            {sortedProducts.length === 0 ? (
+                            {mirrorProducts.length === 0 ? (
 
                                 <div className='my-10 col-span-3'>
                                     <img
@@ -279,7 +283,7 @@ export default function OnlineStore() {
 
                             ) : (
 
-                                sortedProducts.map((product) => (
+                                mirrorProducts.map((product) => (
 
                                     <div key={product.id} className="bg-neutral-primary-soft p-6 rounded-base shadow-md">
 
@@ -309,8 +313,8 @@ export default function OnlineStore() {
                                             <button
                                                 onClick={() => toggleFavorite(product)}
                                                 className={`p-2 border rounded-full transition ${isFavorite(product.id)
-                                                        ? "bg-red-500 text-white"
-                                                        : "hover:bg-gray-100"
+                                                    ? "bg-red-500 text-white"
+                                                    : "hover:bg-gray-100"
                                                     }`}
                                             >
                                                 <FaHeart />

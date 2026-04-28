@@ -1,49 +1,79 @@
-import React from 'react'
-import Breadcrumb from '../components/common/Breadcrumb'
-import { RiDeleteBin6Line } from "react-icons/ri";
+"use client";
 
-export default function MyWhishList() {
+import { useFavorites } from "@/app/(with-header)/context/FavoriteContext";
+import { FaHeart } from "react-icons/fa";
+import Breadcrumb from "../components/common/Breadcrumb";
+
+export default function WishlistPage() {
+
+  const { favorites, toggleFavorite } = useFavorites();
+
   return (
-    <div>
-      <div className='max-w-[1320px] mx-auto mb-10'>
-        <Breadcrumb title={"My Whishlist"} />
-        <div className='my-10'>
+    <div className="max-w-[1320px] mx-auto px-4 py-10">
+
+      <Breadcrumb title={"My Whishlist"}/>
+
+      {favorites.length === 0 ? (
+
+        //EMPTY STATE
+        <div className="text-center my-20">
           <img
             src="https://wscubetech.co/Assignments/furniture/public/frontend/img/icon/wishlist-Empty.jpg"
-            className="img-fluid rounded-md mx-auto"
-            alt=""
+            className="mx-auto mb-6"
+            alt="Empty Wishlist"
           />
-          <p className='text-center py-10'>Your wishlist is empty!</p>
+          <p className="text-lg">Your wishlist is empty</p>
+        </div>
+
+      ) : (
+
+        //FAVORITE PRODUCTS
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+          {favorites.map((product) => (
+
+            <div
+              key={product.id}
+              className="bg-white shadow-md rounded-xl p-4"
+            >
+              <img
+                src={product.image}
+                className="w-full h-[200px] object-contain"
+                alt={product.name}
+              />
+
+              <h3 className="mt-3 font-semibold">{product.name}</h3>
+
+              <p className="text-gray-500 text-sm line-clamp-2">
+                {product.description}
+              </p>
+
+              <p className="text-yellow-600 font-bold mt-2">
+                ₹{product.price}
+              </p>
+
+              <div className="flex justify-between items-center mt-3">
+
+                {/*Remove from wishlist */}
+                <button
+                  onClick={() => toggleFavorite(product)}
+                  className="p-2 bg-red-500 text-white rounded-full"
+                >
+                  <FaHeart />
+                </button>
+
+                <button className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+                  Add to Cart
+                </button>
+
+              </div>
+            </div>
+
+          ))}
 
         </div>
-        <div className=' p-4'>
-          <table className='w-full border border-gray-300'>
-            <thead className='border-b border-b-3 border-yellow-700'>
-              <tr className='font-bold bg-amber-50'>
-                <td className='p-3 text-center'>Delete</td>
-                <td className='p-3 text-center'>Image</td>
-                <td className='p-3 text-center'>Product</td>
-                <td className='p-3 text-center'>Price</td>
-                <td className='p-3 text-center'>Stock Status</td>
-                <td className='p-3 text-center'>Add To Cart</td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className='p-3 text-center border border-gray-300'><RiDeleteBin6Line className='mx-auto' /></td>
-                <td className='p-3 text-center border border-gray-300'><img src='https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/products/1617829892944Evan%20Coffee%20Table__.jpg' className='w-[200px] mx-auto' /></td>
-                <td className='p-3 text-center border border-gray-300'>Evan Coffee Table</td>
-                <td className='p-3 text-center border border-gray-300'>Rs. 2,300</td>
-                <td className='p-3 text-center border border-gray-300'>Out of Stock</td>
-                <td className='p-3 text-center border border-gray-300'>
-                  <button className='bg-yellow-700 text-white px-5 py-2 mx-2 my-2 rounded-md'>Add To Cart</button>
-                </td>
-              </tr>
-            </tbody>
 
-          </table>
-        </div>
-      </div>
+      )}
     </div>
-  )
+  );
 }

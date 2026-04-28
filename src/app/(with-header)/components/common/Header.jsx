@@ -84,11 +84,11 @@ export default function Header() {
                   <button className="px-3 bg-gray-200">🔍</button>
                 </form>
                 {/* Wishlist */}
-                <span><FaHeart /></span>
+                <Link href={"/my-whishlist"}><FaHeart /></Link>
                 {/* Cart */}
                 <div className='relative'>
                   <button className="flex items-center gap-1">
-                    <GiShoppingCart />
+                    <Link href={"/shopping-cart"}><GiShoppingCart /></Link>
                     <span className="absolute -top-3 -right-2 bg-red-500 text-white text-xs px-1 rounded-full">
                       0
                     </span>
@@ -122,7 +122,7 @@ export default function Header() {
                   <button className='flex items-center'>Living <FaCaretDown /></button>
                   <div className="absolute hidden group-hover:block bg-white shadow p-4 w-64">
                     <Link className='font-semibold block' href="/tables">Side and End Tables</Link>
-                    <Link className='font-semibold block' href="/mirrors">Mirror</Link>
+                    <Link className='font-semibold block' href="/mirrors">Mirrors</Link>
                     <Link className='font-semibold block' href="/livings">Living Storage/ Collections</Link>
                   </div>
                 </li>
@@ -170,7 +170,7 @@ export default function Header() {
                       <p className="font-semibold">Swing Jhula</p>
                       <ul className="text-sm mt-2 space-y-1">
                         <li>
-                          <a href="#">Wooden Jhula</a>
+                          <Link href="wooden-jhula">Wooden Jhula</Link>
                         </li>
                       </ul>
                     </div>
@@ -188,7 +188,7 @@ export default function Header() {
                         <Link href="/shopping-cart">Cart</Link>
                       </li>
                       <li>
-                        <a href="#">Checkout</a>
+                        <Link href="checkout">Checkout</Link>
                       </li>
                       <li>
                         <Link href="/frequent-questions">Frequently asked questions</Link>
@@ -255,12 +255,10 @@ export default function Header() {
                     }`}>
                     <ul className="pl-4 text-sm space-y-1">
                       <li>
-                        <Link href="/categories" onClick={() => setMenuOpen(false)}>
-                          Side and End Tables
-                        </Link>
+                        <Link className='font-semibold block' href="/tables">Side and End Tables</Link>
                       </li>
-                      <li>Nest Of Tables</li>
-                      <li>Coffee Tables</li>
+                      <li><Link className='font-semibold block' href="/mirrors">Mirrors</Link></li>
+                      <li><Link className='font-semibold block' href="/livings">Living Storage/ Collections</Link></li>
                     </ul>
                   </div>
                 </div>
@@ -277,11 +275,50 @@ export default function Header() {
 
                   <div className={`overflow-hidden transition-all duration-300 ${openMenu === "sofa" ? "max-h-40 mt-2" : "max-h-0"
                     }`}>
-                    <ul className="pl-4 text-sm space-y-1">
-                      <li>1 Seater</li>
-                      <li>2 Seater</li>
-                      <li>3 Seater</li>
-                    </ul>
+                    <div>
+                      <p className="font-semibold">Sofa Cum Bed</p>
+                      <ul className="text-sm mt-2 space-y-1">
+                        <li>
+                          <Link href="/categories/sofa-cum-bed">Wooden Sofa Cum Bed</Link>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <p className="font-semibold">Sofa Sets</p>
+                      <ul className="text-sm mt-2 space-y-1">
+                        <li>
+                          <Link href="/categories/l-shape-sofa">L Shape Sofa</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/1-seater-sofa">1 Seater Sofa</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/2-seater-sofa">2 Seater Sofa</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/3-seater-sofa">3 Seater Sofa</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/wooden-sofa-set">Wooden Sofa Sets</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/sofa-cover">Sofa Cover</Link>
+                        </li>
+                        <li>
+                          <Link href="/categories/normal">Normal</Link>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <p className="font-semibold">Swing Jhula</p>
+                      <ul className="text-sm mt-2 space-y-1">
+                        <li>
+                          <Link href="wooden-jhula">Wooden Jhula</Link>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
 

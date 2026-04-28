@@ -1,93 +1,73 @@
+"use client";
 
-"use client"
-import { productData } from '@/app/(with-header)/Data/ProductData'
-import React, { useState } from 'react'
+import React, { useState } from "react";
+import { productData } from "@/app/(with-header)/Data/ProductData";
 
 export default function ProductTabs() {
-    let categoryData = []
-    productData.forEach((obj) => {
-        if (!categoryData.includes(obj.category)) {
-            categoryData.push(obj.category)
-        }
-    })
 
-    let [currentCategory, setCurrentCategory] = useState(categoryData[0])
+    //Get unique categories
+    const categories = [...new Set(productData.map(item => item.category))];
 
+    //Default category
+    const [activeCategory, setActiveCategory] = useState(categories[0]);
 
-    let finalData=[...productData]
+    //Filter products
+    const filteredProducts = productData.filter(
+        (item) => item.category === activeCategory
+    );
 
-    finalData=finalData.filter((obj)=>obj.category==currentCategory)
     return (
-        <section className='py-10'>
-            <div className='flex gap-3 justify-center'>
-                {
-                    categoryData.map((v, index) => <button onClick={()=>setCurrentCategory(v)} key={index} className={`px-4 py-2 text-white ${v==currentCategory ? 'bg-red-600' : 'bg-yellow-600'}`}>{v}</button>)
-                }
+        <section className="py-10">
 
-            </div>
-            <div className='max-w-[1320px] mx-auto py-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-
-                {finalData.map((item) => (
-                    <ProductCard key={item.id} data={item} />
+            {/* 🔹 Tabs */}
+            <div className="flex flex-wrap justify-center gap-3 mb-6">
+                {categories.map((cat, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setActiveCategory(cat)}
+                        className={`px-4 py-2 rounded text-white ${activeCategory === cat ? "bg-red-600" : "bg-yellow-600"
+                            }`}
+                    >
+                        {cat}
+                    </button>
                 ))}
+            </div>
 
+            {/* 🔹 Products */}
+            <div className="max-w-[1320px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
+
+                {filteredProducts.length === 0 ? (
+                    <p className="col-span-4 text-center">No products found</p>
+                ) : (
+                    filteredProducts.map((item) => (
+                        <div
+                            key={item.id}
+                            className="bg-white shadow-md rounded-xl p-4"
+                        >
+                            <img
+                                src={item.image}
+                                className="w-full h-[200px] object-contain"
+                                alt={item.name}
+                            />
+
+                            <h3 className="mt-3 font-semibold">{item.name}</h3>
+
+                            <p className="text-gray-500 text-sm line-clamp-2">
+                                {item.description}
+                            </p>
+
+                            <p className="text-yellow-600 font-bold mt-2">
+                                ₹{item.price}
+                            </p>
+
+                            <button className="mt-3 w-full bg-yellow-600 text-white py-2 rounded hover:bg-yellow-700">
+                                Add to Cart
+                            </button>
+                        </div>
+                    ))
+                )}
 
             </div>
         </section>
-    )
-}
-
-function ProductCard({data}) {
-    let {name, category, price, image, description}=data
-    return (
-
-
-        <div className="bg-white shadow-md rounded-xl overflow-hidden group mx-auto max-w-[1320px]">
-
-            <div className="relative">
-                <a href="#">
-                    <img
-                        src={image}
-                        className="w-full h-[250px] object-contain transition duration-300 group-hover:opacity-0"
-                    />
-                    <img
-                        src={image}
-                        className="w-full h-[250px] object-contain absolute top-0 left-0 opacity-0 transition duration-300 group-hover:opacity-100"
-                    />
-                </a>
-            </div>
-
-            <div className="p-4">
-
-                <p className="text-sm text-gray-500 mb-1">{name}</p>
-
-                <h3 className="text-lg font-semibold mb-2">
-                    <a href="#" className="hover:text-yellow-600">
-                        {description}
-                    </a>
-                </h3>
-
-                <div className="flex items-center gap-2 mb-3">
-                    <span className="text-gray-400 line-through">{price +1000}</span>
-                    <span className="text-yellow-600 font-semibold">{price}</span>
-                </div>
-
-                <div className="flex items-center justify-between">
-
-                    <button className="p-2 border rounded-full hover:bg-gray-100">
-                        <img
-                            src="https://wscubetech.co/Assignments/furniture/public/frontend/img/icon/heart-regular.svg"
-                            className="w-5 h-5"
-                        />
-                    </button>
-
-                    <button className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition">
-                        Add to Cart
-                    </button>
-                </div>
-            </div>
-        </div>
-
-
-    )
+    );
 }
