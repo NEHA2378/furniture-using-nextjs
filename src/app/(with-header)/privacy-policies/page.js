@@ -5,7 +5,7 @@ export default function PrivacyPolicies() {
   return (
     <div>
         <Breadcrumb title={"Privacy Policies"}/>
-        <div className='max-w-[1320px] mx-auto my-10'>
+        <div className='max-w-[1320px] mx-auto my-10 p-5'>
             <h2 className='font-bold text-3xl py-2'>Who we are</h2>
             <p className=' py-2'>Our website address is: http://localhost/furniture</p>
             <h2 className='font-bold text-3xl py-2'>What personal data we collect and why we collect it</h2>

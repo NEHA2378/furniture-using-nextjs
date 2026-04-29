@@ -12,7 +12,7 @@ import Cookies from "js-cookie";
 export default function OnlineStore() {
 
     const { toggleFavorite, isFavorite } = useFavorites();
-    const router = useRouter(); // ✅ added
+    const router = useRouter();
 
     const [selectedTitles, setSelectedTitles] = useState([]);
     const [selectedMaterials, setSelectedMaterials] = useState([]);
@@ -108,9 +108,9 @@ export default function OnlineStore() {
     if (sortOption === "high-low") sortedProducts.sort((a, b) => b.price - a.price);
     if (sortOption === "a-z") sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
     if (sortOption === "z-a") sortedProducts.sort((a, b) => b.name.localeCompare(a.name));
-    if (sortOption === "featured") sortedProducts = sortedProducts.filter(p => p.category === "featured");
-    if (sortOption === "new") sortedProducts = sortedProducts.filter(p => p.category === "newArrivals");
-    if (sortOption === "sale") sortedProducts = sortedProducts.filter(p => p.category === "onSale");
+    if (sortOption === "featured") sortedProducts = sortedProducts.filter(p => p.category === "Featured");
+    if (sortOption === "new") sortedProducts = sortedProducts.filter(p => p.category === "New arrivals");
+    if (sortOption === "sale") sortedProducts = sortedProducts.filter(p => p.category === "Onsale");
 
     const titleFilters = [
         "Side and End Tables", "Nest Of Tables", "Coffee Table Sets",

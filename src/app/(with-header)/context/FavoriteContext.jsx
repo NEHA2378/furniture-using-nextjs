@@ -4,10 +4,13 @@ import { createContext, useContext, useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { productData } from "@/app/(with-header)/Data/ProductData";
 import { getWishlistAPI, toggleWishlistAPI } from "../my-whishlist/whishlist";
+import { toast } from "react-toastify";
+import { useRouter } from 'next/navigation';
 
 const FavoriteContext = createContext();
 
 export const FavoriteProvider = ({ children }) => {
+  const router = useRouter();
 
   const [favorites, setFavorites] = useState([]);
 
@@ -47,7 +50,11 @@ export const FavoriteProvider = ({ children }) => {
   // Toggle favorite - add or remove from DB
   const toggleFavorite = async (product) => {
     const token = getToken();
-    if (!token) return;
+    if (!token) {
+      toast.error("Please login first to add items to cart");
+      router.push("/login-register");
+      return;
+    };
 
     try {
       await toggleWishlistAPI(product.id);

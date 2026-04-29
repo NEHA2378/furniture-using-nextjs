@@ -6,13 +6,14 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { productData } from "@/app/(with-header)/Data/ProductData";
 import { getCart, removeFromCart, updateCartQuantity } from "@/app/(with-header)/shopping-cart/cart";
 import Link from "next/link";
-
+import { useDispatch } from "react-redux";
+import { setCartCount } from "@/app/Redux Store/cartSlice";
 
 export default function ShoppingCart() {
 
     const [cart, setCart] = useState([]);
+    const dispatch = useDispatch();
 
-    // ---------------- FETCH CART ----------------
     useEffect(() => {
         fetchCart();
     }, []);
@@ -22,7 +23,6 @@ export default function ShoppingCart() {
             const res = await getCart();
             const cartData = res?.data?.data ?? [];
 
-            // Merge API cart items with local productData to get name/image/price
             const merged = cartData.map((cartItem) => {
                 const product = productData.find(
                     (p) => Number(p.id) === Number(cartItem.product_id)
@@ -38,52 +38,46 @@ export default function ShoppingCart() {
             });
 
             setCart(merged);
+            dispatch(setCartCount(merged.reduce((sum, item) => sum + item.qty, 0)));
+
         } catch (error) {
             console.log(error);
             setCart([]);
+            dispatch(setCartCount(0));
         }
     };
 
-    // ---------------- REMOVE ITEM ----------------
     const handleRemove = async (productId) => {
         try {
             await removeFromCart(productId);
-            setCart((prev) =>
-                prev.filter((item) => Number(item.product_id) !== Number(productId))
-            );
+            const updated = cart.filter((item) => Number(item.product_id) !== Number(productId)); // ✅ CHANGE
+            setCart(updated);
+            dispatch(setCartCount(updated.reduce((sum, item) => sum + item.qty, 0)));
         } catch (error) {
             console.log(error);
         }
     };
 
-    // ---------------- UPDATE QUANTITY ----------------
     const handleQtyChange = async (productId, qty) => {
         const newQty = Math.max(1, Number(qty));
 
-        // Optimistic UI update instantly
-        setCart((prev) =>
-            prev.map((item) =>
-                Number(item.product_id) === Number(productId)
-                    ? { ...item, qty: newQty }
-                    : item
-            )
+        const updated = cart.map((item) => // ✅ CHANGE
+            Number(item.product_id) === Number(productId)
+                ? { ...item, qty: newQty }
+                : item
         );
+        setCart(updated);
+        dispatch(setCartCount(updated.reduce((sum, item) => sum + item.qty, 0)));
 
         try {
             await updateCartQuantity(productId, newQty);
         } catch (error) {
             console.log("Failed to update quantity:", error);
-
-            // Revert back if API fails
-            setCart((prev) =>
-                prev.map((item) =>
-                    Number(item.product_id) === Number(productId)
-                        ? { ...item, qty: item.qty } // revert
-                        : item
-                )
-            );
+            fetchCart(); // re-fetch to revert
         }
     };
+
+    // rest of JSX stays exactly the same...
 
     // ---------------- CALCULATIONS ----------------
     const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);

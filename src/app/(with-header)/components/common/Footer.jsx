@@ -63,7 +63,7 @@ export default function Footer() {
         <h3 className="text-lg font-semibold mb-4">My Account</h3>
         <ul className="space-y-2">
           <li>
-            <Link href="my-dashboard" className="hover:text-blue-600">
+            <Link href="/my-dashboard" className="hover:text-blue-600">
               My Dashboard
             </Link>
           </li>

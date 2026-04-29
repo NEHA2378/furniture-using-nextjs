@@ -21,6 +21,10 @@ export default function middleware(request) {
     if(cookies == '' && request.nextUrl.pathname.startsWith('/my-whishlist')){
       return NextResponse.redirect(new URL('/login-register', request.url))
     }
+
+    if(cookies == '' && request.nextUrl.pathname.startsWith('/shopping-cart')){
+      return NextResponse.redirect(new URL('/login-register', request.url))
+    }
   return (
     NextResponse.next()
   )
