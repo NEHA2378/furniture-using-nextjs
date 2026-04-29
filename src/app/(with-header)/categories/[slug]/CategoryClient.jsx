@@ -1,15 +1,85 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useFilters } from "@/app/(with-header)/categories/FilterContext";
 import { FaHeart } from "react-icons/fa";
 import { useFavorites } from "../../context/FavoriteContext";
+import Link from "next/link";
+import { addToCart } from "../../shopping-cart/cart";
+import { toast } from "react-toastify";
+import { useRouter } from 'next/navigation';
+import Cookies from "js-cookie";
 
-export default function CategoryClient({ products }) {
+export default function CategoryClient({ products, slug }) {
 
     const { toggleFavorite, isFavorite } = useFavorites();
     const { filters } = useFilters();
     const [sortOption, setSortOption] = useState("");
+
+    const [cartItems, setCartItems] = useState([]);
+    const [loadingId, setLoadingId] = useState(null);
+
+    const isInCart = (id) =>
+        cartItems.some((itemId) => Number(itemId) === Number(id));
+
+    const getToken = () => {
+        const raw = Cookies.get("user_login");
+
+        if (!raw) return null;
+
+        try {
+            return JSON.parse(raw)?.token || raw;
+        } catch {
+            return raw;
+        }
+    };
+
+    const handleAddToCart = async (productId) => {
+        const token = getToken();
+
+        //No token → force login
+        if (!token) {
+            toast.error("Please login first to add items to cart");
+            router.push("/login-register");
+            return;
+        }
+
+        try {
+            setLoadingId(productId);
+
+            await addToCart(productId);
+
+            //Optimistic UI update (instant change)
+            setCartItems((prev) => [...prev, Number(productId)]);
+
+            toast.success("Product added to cart");
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to add product to cart");
+        } finally {
+            setLoadingId(null);
+        }
+    };
+
+    const fetchCart = async () => {
+        try {
+            const res = await getCart();
+
+            const cartData = res?.data?.data ?? [];
+
+            const ids = cartData.map((item) =>
+                Number(item.product_id)
+            );
+
+            setCartItems(ids);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchCart();
+    }, []);
 
 
 
@@ -114,11 +184,13 @@ export default function CategoryClient({ products }) {
                                 key={product.id}
                                 className="bg-neutral-primary-soft p-6 rounded-base shadow-md"
                             >
-                                <img
-                                    className="rounded-base w-full h-[200px] object-cover"
-                                    src={product.image}
-                                    alt={product.name}
-                                />
+                                <Link href={`/my-products/${product.id}`}>
+                                    <img
+                                        className="rounded-base w-full h-[200px] object-cover"
+                                        src={product.image}
+                                        alt={product.name}
+                                    />
+                                </Link>
 
                                 <h6 className="mt-4 text-gray-500">
                                     {product.title}
@@ -147,9 +219,23 @@ export default function CategoryClient({ products }) {
                                         <FaHeart />
                                     </button>
 
-                                    <button className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700">
-                                        Add to Cart
-                                    </button>
+                                    {isInCart(product.id) ? (
+                                        <Link href="/shopping-cart">
+                                            <button className="mt-3 bg-green-600 text-white p-2 rounded hover:bg-green-700">
+                                                Go to Cart
+                                            </button>
+                                        </Link>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleAddToCart(product.id)}
+                                            disabled={loadingId === product.id}
+                                            className="mt-3 bg-yellow-600 text-white p-2 rounded hover:bg-yellow-700 disabled:opacity-50"
+                                        >
+                                            {loadingId === product.id
+                                                ? "Adding..."
+                                                : "Add to Cart"}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
 

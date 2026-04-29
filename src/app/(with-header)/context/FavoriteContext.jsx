@@ -1,42 +1,72 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import { productData } from "@/app/(with-header)/Data/ProductData";
+import { getWishlistAPI, toggleWishlistAPI } from "../my-whishlist/whishlist";
 
 const FavoriteContext = createContext();
 
 export const FavoriteProvider = ({ children }) => {
 
-  // ✅ LOAD from localStorage FIRST (important)
-  const [favorites, setFavorites] = useState(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("favorites");
-      return stored ? JSON.parse(stored) : [];
-    }
-    return [];
-  });
+  const [favorites, setFavorites] = useState([]);
 
-  // ✅ ADD / REMOVE
-  const toggleFavorite = (product) => {
-    setFavorites((prev) => {
-      const exists = prev.find((item) => item.id === product.id);
-
-      if (exists) {
-        return prev.filter((item) => item.id !== product.id);
-      } else {
-        return [...prev, product];
-      }
-    });
+  const getToken = () => {
+    const raw = Cookies.get("user_login");
+    if (!raw) return null;
+    try { return JSON.parse(raw)?.token || raw; }
+    catch { return raw; }
   };
 
-  // ✅ CHECK
-  const isFavorite = (id) => {
-    return favorites.some((item) => item.id === id);
-  };
-
-  // ✅ SAVE to localStorage
+  // Load wishlist from DB on mount
   useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  }, [favorites]);
+    const token = getToken();
+    if (!token) return;
+
+    const fetchWishlist = async () => {
+      try {
+        const res = await getWishlistAPI();
+        const data = res?.data?.data ?? [];
+
+        // Merge product_id with productData to get full product info
+        const merged = data.map((item) => {
+          return productData.find(
+            (p) => Number(p.id) === Number(item.product_id)
+          );
+        }).filter(Boolean); // remove any unmatched
+
+        setFavorites(merged);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchWishlist();
+  }, []);
+
+  // Toggle favorite - add or remove from DB
+  const toggleFavorite = async (product) => {
+    const token = getToken();
+    if (!token) return;
+
+    try {
+      await toggleWishlistAPI(product.id);
+
+      // Optimistic UI update
+      setFavorites((prev) => {
+        const exists = prev.find((item) => item.id === product.id);
+        if (exists) {
+          return prev.filter((item) => item.id !== product.id);
+        } else {
+          return [...prev, product];
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const isFavorite = (id) => favorites.some((item) => item.id === id);
 
   return (
     <FavoriteContext.Provider value={{ favorites, toggleFavorite, isFavorite }}>

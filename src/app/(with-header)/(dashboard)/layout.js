@@ -31,15 +31,15 @@ export default function RootLayout({ children }) {
             </div>
 
             
-            <div className="grid grid-cols-4 gap-5">
+            <div className="grid lg:grid-cols-4 grid-cols-1 gap-5">
 
                 
-                <div className="col-span-1">
+                <div className="lg:col-span-1">
                     <DbSidebar />
                 </div>
 
                 
-                <div className="col-span-3 p-4">
+                <div className="lg:col-span-3 p-4">
                     {children}
                 </div>
 

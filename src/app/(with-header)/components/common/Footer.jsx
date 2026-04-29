@@ -63,9 +63,9 @@ export default function Footer() {
         <h3 className="text-lg font-semibold mb-4">My Account</h3>
         <ul className="space-y-2">
           <li>
-            <a href="#" className="hover:text-blue-600">
+            <Link href="my-dashboard" className="hover:text-blue-600">
               My Dashboard
-            </a>
+            </Link>
           </li>
           <li>
             <Link href="/my-whishlist" className="hover:text-blue-600">
@@ -89,10 +89,12 @@ export default function Footer() {
         <h3 className="text-lg font-semibold mb-4">Top Rated Products</h3>
         {/* Product 1 */}
         <div className="flex gap-3 mb-4">
+          <Link href={`/my-products/${4}`}>
           <img
             src="https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/products/16253167208651620078433247Louise%20Cabinet_.jpg"
             className="w-16 h-16 object-cover"
           />
+          </Link>
           <div>
             <p className="text-sm text-gray-500">Cabinets and Sideboard</p>
             <h4 className="font-medium">Louise Cabinet</h4>
@@ -104,10 +106,12 @@ export default function Footer() {
         </div>
         {/* Product 2 */}
         <div className="flex gap-3">
+          <Link href={`/my-products/${3}`}>
           <img
             src="https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/products/1608312103476Dorian%20Shoe%20Rack_.jpg"
             className="w-16 h-16 object-cover"
           />
+          </Link>
           <div>
             <p className="text-sm text-gray-500">Display Unit</p>
             <h4 className="font-medium">Dorian Shoe Rack</h4>

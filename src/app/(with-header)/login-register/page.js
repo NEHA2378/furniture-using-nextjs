@@ -48,7 +48,7 @@ export default function Auth() {
                     toast.success(finalres._message)
                     Cookies.set('user_login', finalres.token)
                     dispatch(login_register(finalres.token))
-                    // navigate.push('/')
+                    navigate.push('/my-dashboard');
                 }
                 else {
                     toast.error(finalres._message)
@@ -110,7 +110,7 @@ export default function Auth() {
     return (
         <div>
 
-            <div className='max-w-[1320px] mx-auto py-10 grid grid-cols-2 gap-5'>
+            <div className='max-w-[1320px] mx-auto py-10 grid grid-cols-1 lg:grid-cols-2 gap-5'>
                 <div className='p-5 shadow-sm border border-[#ccc]'>
                     <h2 className='font-bold text-2xl mb-5'>Login</h2>
                     <form onSubmit={loginUser}>

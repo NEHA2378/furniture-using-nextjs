@@ -13,7 +13,7 @@ export default function Address() {
     return (
         <div className='min-w-full'>
             <h2 className='text-2xl mb-5 font-semibold'>Addresses</h2>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
 
                 
                 <form onSubmit={(e) => handleSubmit(e, "Billing")} className="border p-5 rounded">

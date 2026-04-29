@@ -170,7 +170,7 @@ export default function Header() {
                       <p className="font-semibold">Swing Jhula</p>
                       <ul className="text-sm mt-2 space-y-1">
                         <li>
-                          <Link href="wooden-jhula">Wooden Jhula</Link>
+                          <Link href="/categories/wooden-jhula">Wooden Jhula</Link>
                         </li>
                       </ul>
                     </div>

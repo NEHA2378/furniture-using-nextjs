@@ -3,6 +3,11 @@ import { useFavorites } from '@/app/(with-header)/context/FavoriteContext';
 import { productData } from '@/app/(with-header)/Data/ProductData'
 import React, { useState } from 'react'
 import { FaHeart } from "react-icons/fa";
+import { useRouter } from 'next/navigation';
+import Cookies from "js-cookie";
+import { toast } from 'react-toastify';
+import { addToCart } from '@/app/(with-header)/shopping-cart/cart';
+import Link from 'next/link';
 
 export default function OnlineStore() {
 
@@ -12,6 +17,67 @@ export default function OnlineStore() {
     const [selectedMaterials, setSelectedMaterials] = useState([]);
     const [price, setPrice] = useState(100000);
     const [sortOption, setSortOption] = useState("");
+
+    const [cartItems, setCartItems] = useState([]);
+    const [loadingId, setLoadingId] = useState(null);
+
+    const isInCart = (id) =>
+        cartItems.some((itemId) => Number(itemId) === Number(id));
+
+    const getToken = () => {
+        const raw = Cookies.get("user_login");
+
+        if (!raw) return null;
+
+        try {
+            return JSON.parse(raw)?.token || raw;
+        } catch {
+            return raw;
+        }
+    };
+
+    const handleAddToCart = async (productId) => {
+        const token = getToken();
+
+        //No token → force login
+        if (!token) {
+            toast.error("Please login first to add items to cart");
+            router.push("/login-register");
+            return;
+        }
+
+        try {
+            setLoadingId(productId);
+
+            await addToCart(productId);
+
+            //Optimistic UI update (instant change)
+            setCartItems((prev) => [...prev, Number(productId)]);
+
+            toast.success("Product added to cart");
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to add product to cart");
+        } finally {
+            setLoadingId(null);
+        }
+    };
+
+    const fetchCart = async () => {
+        try {
+            const res = await getCart();
+
+            const cartData = res?.data?.data ?? [];
+
+            const ids = cartData.map((item) =>
+                Number(item.product_id)
+            );
+
+            setCartItems(ids);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const handleTitleChange = (value) => {
         setSelectedTitles((prev) =>
@@ -320,11 +386,23 @@ export default function OnlineStore() {
                                                 <FaHeart />
                                             </button>
 
-                                            <button
-                                                className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700"
-                                            >
-                                                Add to Cart
-                                            </button>
+                                            {isInCart(product.id) ? (
+                                                <Link href="/shopping-cart">
+                                                    <button className="mt-3 bg-green-600 text-white p-2 rounded hover:bg-green-700">
+                                                        Go to Cart
+                                                    </button>
+                                                </Link>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleAddToCart(product.id)}
+                                                    disabled={loadingId === product.id}
+                                                    className="mt-3 bg-yellow-600 text-white p-2 rounded hover:bg-yellow-700 disabled:opacity-50"
+                                                >
+                                                    {loadingId === product.id
+                                                        ? "Adding..."
+                                                        : "Add to Cart"}
+                                                </button>
+                                            )}
                                         </div>
 
                                     </div>

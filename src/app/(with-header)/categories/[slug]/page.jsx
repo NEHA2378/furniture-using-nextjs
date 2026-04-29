@@ -13,14 +13,19 @@ export default async function Page({ params }) {
     "sofa-cum-bed": "Wooden Sofa Cum Bed",
     "wooden-sofa-set": "Wooden Sofa Sets",
     "normal": "Normal",
-    "wooden-jhula": "Wooden Jhula"
+    "wooden-jhula": "Wooden Jhula",
+    "best-selling": "Best selling",
+    "new-arrivals": "New arrivals",
+    "onsale": "Onsale"
   };
 
   const categoryTitle = categoryMap[slug];
+  const categoryCategory = categoryMap[slug]
 
   // Only category filtering on server (FAST)
   const categoryProducts = productData.filter(
-    (product) => product.title === categoryTitle
+    (product) => product.title === categoryTitle ||
+      product.category === categoryCategory
   );
 
   return <CategoryClient products={categoryProducts} />;
@@ -37,6 +42,9 @@ export function generateStaticParams() {
     { slug: "sofa-cum-bed" },
     { slug: "wooden-sofa-set" },
     { slug: "normal" },
-    { slug: "wooden-jhula"}
+    { slug: "wooden-jhula" },
+    { slug: "best-selling" },
+    { slug: "new-arrivals" },
+    { slug: "onsale" }
   ];
 }

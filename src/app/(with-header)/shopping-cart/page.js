@@ -1,94 +1,227 @@
-'use client'
-import React, { useState } from 'react'
-import Breadcrumb from '../components/common/Breadcrumb'
+"use client";
+
+import React, { useEffect, useState } from "react";
+import Breadcrumb from "../components/common/Breadcrumb";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { productData } from "@/app/(with-header)/Data/ProductData";
+import { getCart, removeFromCart, updateCartQuantity } from "@/app/(with-header)/shopping-cart/cart";
+import Link from "next/link";
+
 
 export default function ShoppingCart() {
-    const [qty, setQty] = useState(1);
+
+    const [cart, setCart] = useState([]);
+
+    // ---------------- FETCH CART ----------------
+    useEffect(() => {
+        fetchCart();
+    }, []);
+
+    const fetchCart = async () => {
+        try {
+            const res = await getCart();
+            const cartData = res?.data?.data ?? [];
+
+            // Merge API cart items with local productData to get name/image/price
+            const merged = cartData.map((cartItem) => {
+                const product = productData.find(
+                    (p) => Number(p.id) === Number(cartItem.product_id)
+                );
+                return {
+                    _id: cartItem._id,
+                    product_id: cartItem.product_id,
+                    qty: cartItem.quantity ?? 1,
+                    name: product?.name ?? "Unknown Product",
+                    image: product?.image ?? "",
+                    price: product?.price ?? 0,
+                };
+            });
+
+            setCart(merged);
+        } catch (error) {
+            console.log(error);
+            setCart([]);
+        }
+    };
+
+    // ---------------- REMOVE ITEM ----------------
+    const handleRemove = async (productId) => {
+        try {
+            await removeFromCart(productId);
+            setCart((prev) =>
+                prev.filter((item) => Number(item.product_id) !== Number(productId))
+            );
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    // ---------------- UPDATE QUANTITY ----------------
+    const handleQtyChange = async (productId, qty) => {
+        const newQty = Math.max(1, Number(qty));
+
+        // Optimistic UI update instantly
+        setCart((prev) =>
+            prev.map((item) =>
+                Number(item.product_id) === Number(productId)
+                    ? { ...item, qty: newQty }
+                    : item
+            )
+        );
+
+        try {
+            await updateCartQuantity(productId, newQty);
+        } catch (error) {
+            console.log("Failed to update quantity:", error);
+
+            // Revert back if API fails
+            setCart((prev) =>
+                prev.map((item) =>
+                    Number(item.product_id) === Number(productId)
+                        ? { ...item, qty: item.qty } // revert
+                        : item
+                )
+            );
+        }
+    };
+
+    // ---------------- CALCULATIONS ----------------
+    const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
+
     return (
-        <div>
-            <div className='max-w-[1320px] mx-auto mb-10'>
-                <Breadcrumb title={"My Shopping Cart"} />
-                <div className=' my-10'>
+        <div className="max-w-[1320px] mx-auto mb-10">
+
+            <Breadcrumb title={"My Shopping Cart"} />
+
+            {cart.length === 0 ? (
+                <div className="my-10 text-center">
                     <img
                         src="https://wscubetech.co/Assignments/furniture/public/frontend/img/icon/my-Order.jpg"
-                        className="img-fluid rounded-md mx-auto"
+                        className="mx-auto"
                         alt=""
                     />
-                    <p className='text-center py-10'>Your Shopping Cart is empty!</p>
-
+                    <p className="py-10">Your Shopping Cart is empty!</p>
                 </div>
+            ) : (
+                <>
+                    <div className="w-full overflow-x-auto p-4">
+                        <table className="w-full border border-gray-300">
 
-                <div className=' p-4'>
-                    <table className='w-full border border-gray-300'>
-                        <thead className='border-b border-b-3 border-yellow-700'>
-                            <tr className='font-bold bg-amber-50'>
-                                <td className='p-3 text-center'>Delete</td>
-                                <td className='p-3 text-center'>Image</td>
-                                <td className='p-3 text-center'>Product</td>
-                                <td className='p-3 text-center'>Price</td>
-                                <td className='p-3 text-center'>Quantity</td>
-                                <td className='p-3 text-center'>Total</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td className='p-3 text-center border border-gray-300'><RiDeleteBin6Line className='mx-auto' /></td>
-                                <td className='p-3 text-center border border-gray-300'><img src='https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/products/1617829892944Evan%20Coffee%20Table__.jpg' className='w-[200px] mx-auto' /></td>
-                                <td className='p-3 text-center border border-gray-300'>Evan Coffee Table</td>
-                                <td className='p-3 text-center border border-gray-300'>Rs. 2,300</td>
-                                <td className='p-3 text-center border border-gray-300'>Quantity <input type='number' className='border w-[35px]' value={qty}
-                                    onChange={(e) => setQty(e.target.value)} /></td>
-                                <td className='p-3 text-center border border-gray-300'>Rs. 2,300</td>
-                            </tr>
-                        </tbody>
+                            <thead className="border-b border-yellow-700 bg-amber-50">
+                                <tr className="font-bold">
+                                    <td className="p-3 text-center">Delete</td>
+                                    <td className="p-3 text-center">Image</td>
+                                    <td className="p-3 text-center">Product</td>
+                                    <td className="p-3 text-center">Price</td>
+                                    <td className="p-3 text-center">Quantity</td>
+                                    <td className="p-3 text-center">Total</td>
+                                </tr>
+                            </thead>
 
-                    </table>
-                    <div className='flex justify-end'>
-                        <button className='bg-black text-white px-5 py-2 mx-2 my-2 rounded-md'>Update Cart</button>
+                            <tbody>
+                                {cart.map((item) => (
+                                    <tr key={item._id}>
+
+                                        <td className="p-3 text-center border">
+                                            <RiDeleteBin6Line
+                                                className="mx-auto text-red-600 cursor-pointer"
+                                                onClick={() => handleRemove(item.product_id)}
+                                            />
+                                        </td>
+
+                                        <td className="p-3 text-center border">
+                                            <img
+                                                src={item.image}
+                                                className="w-[120px] mx-auto object-contain"
+                                                alt={item.name}
+                                            />
+                                        </td>
+
+                                        <td className="p-3 text-center border">
+                                            {item.name}
+                                        </td>
+
+                                        <td className="p-3 text-center border">
+                                            ₹{item.price}
+                                        </td>
+
+                                        <td className="p-3 text-center border">
+                                            <input
+                                                type="number"
+                                                min={1}
+                                                className="border w-[60px] text-center"
+                                                value={item.qty}
+                                                onChange={(e) =>
+                                                    handleQtyChange(item.product_id, e.target.value)
+                                                }
+                                            />
+                                        </td>
+
+                                        <td className="p-3 text-center border">
+                                            ₹{item.price * item.qty}
+                                        </td>
+
+                                    </tr>
+                                ))}
+                            </tbody>
+
+                        </table>
                     </div>
 
-                </div>
-                <div className='grid grid-cols-2 gap-4'>
-                    <div className='border border-gray-300'>
-                        <div className='p-3 font-bold bg-black'>
-                            <h2 className='text-white'>COUPON</h2>
+                    {/* BOTTOM SECTION */}
+                    <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mt-5">
+
+                        {/* COUPON */}
+                        <div className="border p-4">
+                            <div className="p-3 font-bold bg-black">
+                                <h2 className="text-white">COUPON</h2>
+                            </div>
+                            <div className="mt-5">
+                                <p className="font-semibold">Enter your coupon code if you have one.</p>
+                                <div className="mt-3 flex gap-2">
+                                    <input
+                                        className="border p-2"
+                                        type="text"
+                                        placeholder="Coupon Code"
+                                    />
+                                    <button className="bg-yellow-700 text-white px-3 py-2 rounded-sm">
+                                        APPLY COUPON
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div className='p-5'>
-                            <p>Enter your coupon code if you have one.</p>
-                            <form className='mt-4'>
-                                <input className='border p-2' type='text' placeholder='Coupon Code' required={true}/>
-                                <button className='bg-black text-white px-3 py-2 rounded-sm ms-4'>APPLY COUPON</button>
-                            </form>
+
+                        {/* TOTALS */}
+                        <div className="border p-4">
+                            <div className="p-3 font-bold bg-black">
+                                <h2 className="text-white uppercase">Cart Totals</h2>
+                            </div>
+                            <div className="p-5">
+                                <div className="flex justify-between font-bold mb-3">
+                                    <p>Subtotal</p>
+                                    <p>₹{subtotal}</p>
+                                </div>
+                                <div className="flex justify-between font-bold mb-3">
+                                    <p>Discount (-)</p>
+                                    <p>₹0</p>
+                                </div>
+                                <div className="flex justify-between font-bold mb-3">
+                                    <p>Total</p>
+                                    <p>₹{subtotal}</p>
+                                </div>
+                                <div className="flex justify-end">
+                                    <Link href={"/checkout"}>
+                                        <button className="bg-yellow-700 text-white px-3 py-2 rounded-sm uppercase">
+                                            Proceed to Checkout
+                                        </button>
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
-
-                    <div className='border border-gray-300'>
-                        <div className='p-3 font-bold bg-black'>
-                            <h2 className='text-white uppercase'>Cart Totals</h2>
-                        </div>
-                        <div className='p-5'>
-                            <div className='flex justify-between font-bold mb-3'>
-                                <p>Subtotal</p>
-                                <p>Rs. 2,300</p>
-                            </div>
-
-                            <div className='flex justify-between font-bold mb-3'>
-                                <p>Discount (-)</p>
-                                <p>Rs. 0</p>
-                            </div>
-
-                            <div className='flex justify-between font-bold mb-3'>
-                                <p>Total</p>
-                                <p>Rs. 2,300</p>
-                            </div>
-                            <div className='flex justify-end'>
-                                <button className='bg-yellow-700 text-white px-3 py-2 rounded-sm ms-4 uppercase'>Proceed to Checkout</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                </>
+            )}
         </div>
-    )
+    );
 }

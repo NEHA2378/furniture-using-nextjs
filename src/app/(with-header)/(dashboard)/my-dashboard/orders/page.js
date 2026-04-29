@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function Orders() {
     return (
-        <div className='min-w-full'>
+        <div className='w-full overflow-x-auto'>
             <h2 className='text-2xl mb-5 font-semibold'>Orders</h2>
             <table className="w-full border border-gray-200 text-sm">
                 <thead className="bg-gray-100">

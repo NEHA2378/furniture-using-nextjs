@@ -4,7 +4,7 @@ import React from 'react'
 export default function CollestionBanner() {
     return (
         <div><section
-            className="banner_fullwidth"
+            className="banner_fullwidth overflow-hidden"
             style={{
                 background:
                     'url("https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/home-page/e9234fa4-3ff6-4a6e-a00e-0c9ff26e7b20-1670180400.jpg") no-repeat scroll center center/cover'

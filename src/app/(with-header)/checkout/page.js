@@ -1,24 +1,92 @@
 "use client"
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Breadcrumb from '../components/common/Breadcrumb'
-import axios from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
-import { useRazorpay, RazorpayOrderOptions } from "react-razorpay";
+import { useRazorpay } from "react-razorpay";
+import { getCart, removeFromCart } from '@/app/(with-header)/shopping-cart/cart';
+import { productData } from '@/app/(with-header)/Data/ProductData';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
-export default function checkout() {
+export default function Checkout() {
 
-    const { error, isLoading, Razorpay } = useRazorpay();
+    const { Razorpay } = useRazorpay();
+    const router = useRouter();
     let apiBaseUrl = process.env.NEXT_PUBLIC_APIBASEPATH;
 
-    const placeOrder = (e) => {
+    const [cart, setCart] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    // ---------------- GET TOKEN ----------------
+    const getToken = () => {
+        const raw = Cookies.get("user_login");
+        if (!raw) return null;
+        try {
+            return JSON.parse(raw)?.token || raw;
+        } catch {
+            return raw;
+        }
+    };
+
+    // ---------------- FETCH CART ----------------
+    useEffect(() => {
+        fetchCart();
+    }, []);
+
+    const fetchCart = async () => {
+        try {
+            const res = await getCart();
+            const cartData = res?.data?.data ?? [];
+
+            const merged = cartData.map((cartItem) => {
+                const product = productData.find(
+                    (p) => Number(p.id) === Number(cartItem.product_id)
+                );
+                return {
+                    product_id: cartItem.product_id,
+                    qty: cartItem.quantity ?? 1,
+                    name: product?.name ?? "Unknown Product",
+                    image: product?.image ?? "",
+                    price: product?.price ?? 0,
+                };
+            });
+
+            setCart(merged);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    // ---------------- CALCULATIONS ----------------
+    const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
+    const discount = 0;
+    const total = subtotal - discount;
+
+    // ---------------- PLACE ORDER ----------------
+    const placeOrder = async (e) => {
         e.preventDefault();
+        const token = getToken();
+
+        if (!token) {
+            toast.error("Please login first");
+            router.push("/login-register");
+            return;
+        }
+
+        if (cart.length === 0) {
+            toast.error("Your cart is empty");
+            return;
+        }
 
         const dataSave = {
-            total_amount: 5000,
-            discount_amount: 1000,
-            net_amount: 4000,
-            shipping_address: { name: 'test' },
+            total_amount: subtotal,
+            discount_amount: discount,
+            net_amount: total,
+            shipping_address: {
+                name: e.target.name.value,
+                mobile_number: e.target.mobile_number.value,
+            },
             billing_address: {
                 name: e.target.billingName.value,
                 email: e.target.billingEmail.value,
@@ -29,56 +97,57 @@ export default function checkout() {
                 city: e.target.city.value,
             },
             mobile_number: e.target.mobile_number.value,
-            name: e.target.name.value
+            name: e.target.name.value,
+            product_info: cart.map((item) => ({
+                product_id: item.product_id,
+                name: item.name,
+                quantity: item.qty,
+                price: item.price,
+                total: item.price * item.qty,
+            })),
+        };
+
+        try {
+            setLoading(true);
+            const result = await axios.post(
+                `${apiBaseUrl}/user/order-place`,
+                dataSave,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            handlePayment(result.data._orderInfo, e.target, token);
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong");
+        } finally {
+            setLoading(false);
         }
+    };
 
-        axios.post(`${apiBaseUrl}/user/order-place`, dataSave, {
-            headers: {
-                'Authorization': `Bearer ${Cookies.get('user_login')}`
-            }
-        })
-            .then((result) => {
-                handlePayment(result.data._orderInfo)
-                // toast.success('Order Placed')
-                // if (res.data._status) {
-                //     setUserProfile(res.data._userProfile)
-                //     setSelectedTitle(res.data._userProfile.gender)
-                // }
-                // else {
-                //     toast.error(res.data._message)
-                // }
-            })
-            .catch(() => {
-                toast.error("Something went wrong")
-            })
-    }
-
-
-    const handlePayment = (orderInfo) => {
+    // ---------------- RAZORPAY ----------------
+    const handlePayment = (orderInfo, formTarget, token) => {
         const options = {
             key: "rzp_test_WAft3lA6ly3OBc",
-            amount: orderInfo.net_amount * 100, // Amount in paise
+            amount: orderInfo.amount,         // already in paise from backend
             currency: "INR",
             name: "Monsta Furniture Shop",
-            description: "Test Transaction",
-            order_id: orderInfo.id, // Generate order_id on server
+            description: "Furniture Order",
+            order_id: orderInfo.id,
             handler: (response) => {
-                console.log("Payment Success");
-                console.log("Order ID:", response.razorpay_order_id);
-                console.log("Payment ID:", response.razorpay_payment_id);
-                console.log("Signature:", response.razorpay_signature);
-
                 orderStatusChange(
                     response.razorpay_payment_id,
-                    response.razorpay_order_id
+                    response.razorpay_order_id,
+                    token
                 );
-
-                // alert("Payment Successful!");
             },
             prefill: {
-                name: "John Doe",
-                email: "john.doe@example.com",
-                contact: "9999999999",
+                name: formTarget.name.value,
+                email: formTarget.billingEmail.value,
+                contact: formTarget.mobile_number.value,
             },
             theme: {
                 color: "#F37254",
@@ -87,158 +156,157 @@ export default function checkout() {
 
         const razorpayInstance = new Razorpay(options);
 
-        razorpayInstance.on("payment.failed", function (response) {
-            console.log("Payment Failed");
-            console.log("FULL RESPONSE:", response);
-
+        razorpayInstance.on("payment.failed", (response) => {
             orderStatusChange(
                 response.error.metadata.payment_id,
-                response.error.metadata.order_id
+                response.error.metadata.order_id,
+                token
             );
         });
 
         razorpayInstance.open();
     };
 
-    const orderStatusChange = (payment_id, order_id) => {
-        // e.preventDefault();
-
-        const dataSave = {
-            payment_id: payment_id,
-            order_id: order_id,
-        }
-
-        axios.post(`${apiBaseUrl}/user/order-status-change`, dataSave, {
-            headers: {
-                'Authorization': `Bearer ${Cookies.get('user_login')}`
-            }
-        })
-            .then((result) => {
-                if (result.data._data.payment_status == 2) { toast.success('Order Placed') }
-                else {
-                    toast.error('Payment failed !!');
+    // ---------------- ORDER STATUS ----------------
+    const orderStatusChange = async (payment_id, order_id, token) => {
+        try {
+            const result = await axios.post(
+                `${apiBaseUrl}/user/order-status-change`,
+                { payment_id, order_id },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
-            })
-            .catch((error) => {
-                toast.error("Something went wrong")
-                console.log(error.response.data);
+            );
+
+            if (result.data._data?.payment_status === 2) {
                 
-            })
-    }
+                await Promise.all(
+                    cart.map((item) => removeFromCart(item.product_id))
+                );
+
+                setCart([]);
+
+                toast.success("Order Placed Successfully!");
+                router.push("/");
+            } else {
+                toast.error("Payment failed. Please try again.");
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong");
+        }
+    };
 
     return (
         <div className='max-w-[1320px] mx-auto py-10'>
             <Breadcrumb title={"Checkout"} />
             <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
 
-                {/* LEFT */}
+                {/* LEFT - FORM */}
                 <form
                     onSubmit={placeOrder}
                     className="md:col-span-2 bg-white p-6 rounded-lg shadow space-y-5"
                 >
-                    <h2 className="text-2xl font-semibold">Billing Details</h2>
+                    <h2 className="text-2xl font-semibold">Your Complete Address</h2>
 
-                    {/* Name */}
                     <div>
                         <label className="block mb-1 font-medium">Name *</label>
-                        <input name="name" className="input w-full border rounded-sm p-2 outline-none" />
+                        <input required name="name" className="w-full border rounded-sm p-2 outline-none" />
                     </div>
 
-                    {/* Mobile */}
                     <div>
                         <label className="block mb-1 font-medium">Mobile Number *</label>
-                        <input name="mobile_number" className="input w-full border rounded-sm p-2 outline-none" />
+                        <input required name="mobile_number" className="w-full border rounded-sm p-2 outline-none" />
                     </div>
 
-                    {/* Billing Name */}
                     <div>
                         <label className="block mb-1 font-medium">Billing Name *</label>
-                        <input name="billingName" className="input w-full border rounded-sm p-2 outline-none" />
+                        <input required name="billingName" className="w-full border rounded-sm p-2 outline-none" />
                     </div>
 
-                    {/* Billing Email */}
                     <div>
                         <label className="block mb-1 font-medium">Billing Email *</label>
-                        <input name="billingEmail" type="email" className="input w-full border rounded-sm p-2 outline-none" />
+                        <input required name="billingEmail" type="email" className="w-full border rounded-sm p-2 outline-none" />
                     </div>
 
-                    {/* Billing Mobile */}
                     <div>
                         <label className="block mb-1 font-medium">Billing Mobile Number *</label>
-                        <input name="billingMobile" className="input w-full border rounded-sm p-2 outline-none" />
+                        <input required name="billingMobile" className="w-full border rounded-sm p-2 outline-none" />
                     </div>
 
-                    {/* Address */}
                     <div>
                         <label className="block mb-1 font-medium">Billing Address *</label>
-                        <textarea name="billingAddress" className="input w-full border rounded-sm p-2 outline-none" />
+                        <textarea required name="billingAddress" className="w-full border rounded-sm p-2 outline-none" />
                     </div>
 
-                    {/* Country */}
                     <div>
                         <label className="block mb-1 font-medium">Country *</label>
-                        <input name="country" className="input w-full border rounded-sm p-2 outline-none" />
+                        <input required name="country" className="w-full border rounded-sm p-2 outline-none" />
                     </div>
 
-                    {/* State */}
                     <div>
                         <label className="block mb-1 font-medium">State *</label>
-                        <input name="state" className="input w-full border rounded-sm p-2 outline-none" />
+                        <input required name="state" className="w-full border rounded-sm p-2 outline-none" />
                     </div>
 
-                    {/* City */}
                     <div>
                         <label className="block mb-1 font-medium">City *</label>
-                        <input name="city" className="input w-full border rounded-sm p-2 outline-none" />
+                        <input required name="city" className="w-full border rounded-sm p-2 outline-none" />
                     </div>
 
-                    {/* Checkbox */}
-                    <div className="flex items-center gap-2">
-                        <input type="checkbox" name="shipDifferent" />
-                        <label>Ship to a different address?</label>
-                    </div>
-
-                    {/* Notes */}
                     <div>
                         <label className="block mb-1 font-medium">Order Notes</label>
-                        <textarea name="notes" className="input w-full border rounded-sm p-2 outline-none" />
+                        <textarea name="notes" className="w-full border rounded-sm p-2 outline-none" />
                     </div>
 
-                    {/* Button */}
-                    <button className="w-full bg-black text-white py-3 rounded hover:bg-gray-800">
-                        Place Order
+                    <button
+                        type="submit"
+                        disabled={loading || cart.length === 0}
+                        className="w-full bg-black text-white py-3 rounded hover:bg-gray-800 disabled:opacity-50"
+                    >
+                        {loading ? "Placing Order..." : "Place Order"}
                     </button>
                 </form>
 
-                {/* RIGHT */}
-                <div className="bg-white p-6 rounded-lg shadow">
+                {/* RIGHT - ORDER SUMMARY */}
+                <div className="bg-white p-6 rounded-lg shadow h-fit">
                     <h2 className="text-2xl font-semibold mb-4">Your Order</h2>
 
-                    <div className="border-b pb-3 mb-3">
-                        <div className="flex justify-between gap-10">
-                            <span>Evan Coffee Table × 1</span>
-                            <span>Rs. 2,300</span>
-                        </div>
+                    {/* Cart Items */}
+                    <div className="border-b pb-3 mb-3 space-y-2">
+                        {cart.length === 0 ? (
+                            <p className="text-gray-500 text-sm">No items in cart</p>
+                        ) : (
+                            cart.map((item) => (
+                                <div key={item.product_id} className="flex justify-between gap-4 text-sm">
+                                    <span>{item.name} × {item.qty}</span>
+                                    <span>₹{item.price * item.qty}</span>
+                                </div>
+                            ))
+                        )}
                     </div>
 
+                    {/* Totals */}
                     <div className="space-y-2 border-b pb-3 mb-3">
                         <div className="flex justify-between">
-                            <span>Cart Subtotal</span>
-                            <span>Rs. 2,300</span>
+                            <span>Subtotal</span>
+                            <span>₹{subtotal}</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Discount (-)</span>
-                            <span>Rs. 0</span>
+                            <span>₹{discount}</span>
                         </div>
                     </div>
 
                     <div className="flex justify-between font-bold text-lg">
                         <span>Order Total</span>
-                        <span>Rs. 2,300</span>
+                        <span>₹{total}</span>
                     </div>
                 </div>
 
             </div>
         </div>
-    )
+    );
 }
