@@ -116,11 +116,13 @@ export default function ShoppingCart() {
                                             />
                                         </td>
                                         <td className="p-3 text-center border">
-                                            <img
-                                                src={item.image}
-                                                className="w-[120px] mx-auto object-contain"
-                                                alt={item.name}
-                                            />
+                                            <Link href={`/my-products/${product.id}`}>
+                                                <img
+                                                    src={item.image}
+                                                    className="w-[120px] mx-auto object-contain"
+                                                    alt={item.name}
+                                                />
+                                            </Link>
                                         </td>
                                         <td className="p-3 text-center border">{item.name}</td>
                                         <td className="p-3 text-center border">₹{item.price}</td>
