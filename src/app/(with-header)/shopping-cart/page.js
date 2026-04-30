@@ -116,7 +116,7 @@ export default function ShoppingCart() {
                                             />
                                         </td>
                                         <td className="p-3 text-center border">
-                                            <Link href={`/my-products/${item.id}`}>
+                                            <Link href={`/my-products/${item._id}`}>
                                                 <img
                                                     src={item.image}
                                                     className="w-[120px] mx-auto object-contain"
