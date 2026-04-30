@@ -142,15 +142,19 @@ export default function Header() {
         </div>
 
         {/* Header Middle */}
-        <div className="py-4 border-b">
-          <div className="max-w-7xl mx-auto px-4">
+        <div className="py-2 border-b">
+          <div className="max-w-[1320px] mx-auto px-4">
             <div className="flex items-center justify-between">
               {/* Logo */}
-              <img
-                src="https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/company-profile/logo/cccfbdab-3bec-439f-88b9-5694698cd302-1670132652.png"
-                alt="logo"
-                className="h-10"
-              />
+              <div>
+                <Link href={"/"}>
+                  <img
+                    src="logo.svg"
+                    alt="logo"
+                    className="h-20"
+                  />
+                </Link>
+              </div>
               {/* Right Section */}
               <div className="flex items-center gap-4">
 
