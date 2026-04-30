@@ -353,11 +353,13 @@ export default function OnlineStore() {
 
                                     <div key={product.id} className="bg-neutral-primary-soft p-6 rounded-base shadow-md">
 
-                                        <img
-                                            className="rounded-base w-full h-[200px] object-cover"
-                                            src={product.image}
-                                            alt={product.name}
-                                        />
+                                        <Link href={`/my-products/${product.id}`}>
+                                            <img
+                                                className="rounded-base w-full h-[200px] object-cover"
+                                                src={product.image}
+                                                alt={product.name}
+                                            />
+                                        </Link>
 
                                         <h6 className='mt-4 text-gray-500'>
                                             {product.title}
