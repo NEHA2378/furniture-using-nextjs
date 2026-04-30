@@ -99,7 +99,7 @@ export default function ShoppingCart() {
             ) : (
                 <>
                     <div className="w-full overflow-x-auto p-4">
-                        <table className="w-full border border-gray-300">
+                        <table className="w-full border border-gray-300 overflow-x-auto">
 
                             <thead className="border-b border-yellow-700 bg-amber-50">
                                 <tr className="font-bold">
