@@ -50,7 +50,7 @@ export default function ShoppingCart() {
     const handleRemove = async (productId) => {
         try {
             await removeFromCart(productId);
-            const updated = cart.filter((item) => Number(item.product_id) !== Number(productId)); // ✅ CHANGE
+            const updated = cart.filter((item) => Number(item.product_id) !== Number(productId));
             setCart(updated);
             dispatch(setCartCount(updated.reduce((sum, item) => sum + item.qty, 0)));
         } catch (error) {
@@ -60,30 +60,25 @@ export default function ShoppingCart() {
 
     const handleQtyChange = async (productId, qty) => {
         const newQty = Math.max(1, Number(qty));
-
-        const updated = cart.map((item) => // ✅ CHANGE
+        const updated = cart.map((item) =>
             Number(item.product_id) === Number(productId)
                 ? { ...item, qty: newQty }
                 : item
         );
         setCart(updated);
         dispatch(setCartCount(updated.reduce((sum, item) => sum + item.qty, 0)));
-
         try {
             await updateCartQuantity(productId, newQty);
         } catch (error) {
             console.log("Failed to update quantity:", error);
-            fetchCart(); // re-fetch to revert
+            fetchCart();
         }
     };
 
-    // rest of JSX stays exactly the same...
-
-    // ---------------- CALCULATIONS ----------------
     const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
 
     return (
-        <div className="max-w-[1320px] mx-auto mb-10 overflow-x-auto">
+        <div className="max-w-[1320px] mx-auto mb-10 px-4">
 
             <Breadcrumb title={"My Shopping Cart"} />
 
@@ -91,16 +86,16 @@ export default function ShoppingCart() {
                 <div className="my-10 text-center">
                     <img
                         src="https://wscubetech.co/Assignments/furniture/public/frontend/img/icon/my-Order.jpg"
-                        className="mx-auto"
+                        className="mx-auto w-[200px] sm:w-[300px]"
                         alt=""
                     />
-                    <p className="py-10">Your Shopping Cart is empty!</p>
+                    <p className="py-10 text-gray-500">Your Shopping Cart is empty!</p>
                 </div>
             ) : (
                 <>
-                    <div className="w-full overflow-x-auto p-4">
+                    {/* ── DESKTOP TABLE (md and above) ── */}
+                    <div className="hidden md:block w-full overflow-x-auto p-4">
                         <table className="w-full border border-gray-300">
-
                             <thead className="border-b border-yellow-700 bg-amber-50">
                                 <tr className="font-bold">
                                     <td className="p-3 text-center">Delete</td>
@@ -111,18 +106,15 @@ export default function ShoppingCart() {
                                     <td className="p-3 text-center">Total</td>
                                 </tr>
                             </thead>
-
                             <tbody>
                                 {cart.map((item) => (
                                     <tr key={item._id}>
-
                                         <td className="p-3 text-center border">
                                             <RiDeleteBin6Line
-                                                className="mx-auto text-red-600 cursor-pointer"
+                                                className="mx-auto text-red-600 cursor-pointer text-lg"
                                                 onClick={() => handleRemove(item.product_id)}
                                             />
                                         </td>
-
                                         <td className="p-3 text-center border">
                                             <img
                                                 src={item.image}
@@ -130,43 +122,61 @@ export default function ShoppingCart() {
                                                 alt={item.name}
                                             />
                                         </td>
-
-                                        <td className="p-3 text-center border">
-                                            {item.name}
-                                        </td>
-
-                                        <td className="p-3 text-center border">
-                                            ₹{item.price}
-                                        </td>
-
+                                        <td className="p-3 text-center border">{item.name}</td>
+                                        <td className="p-3 text-center border">₹{item.price}</td>
                                         <td className="p-3 text-center border">
                                             <input
                                                 type="number"
                                                 min={1}
                                                 className="border w-[60px] text-center"
                                                 value={item.qty}
-                                                onChange={(e) =>
-                                                    handleQtyChange(item.product_id, e.target.value)
-                                                }
+                                                onChange={(e) => handleQtyChange(item.product_id, e.target.value)}
                                             />
                                         </td>
-
-                                        <td className="p-3 text-center border">
-                                            ₹{item.price * item.qty}
-                                        </td>
-
+                                        <td className="p-3 text-center border">₹{item.price * item.qty}</td>
                                     </tr>
                                 ))}
                             </tbody>
-
                         </table>
                     </div>
 
-                    {/* BOTTOM SECTION */}
-                    <div className="grid grid-cols-1 gap-4 mt-5 p-4 w-full">
+                    {/* ── MOBILE CARDS (below md) ── */}
+                    <div className="flex flex-col gap-4 md:hidden mt-4">
+                        {cart.map((item) => (
+                            <div key={item._id} className="border border-gray-200 rounded-lg p-4 flex gap-4 shadow-sm">
+                                <img
+                                    src={item.image}
+                                    className="w-[80px] h-[80px] object-contain rounded"
+                                    alt={item.name}
+                                />
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                        <p className="font-semibold text-sm">{item.name}</p>
+                                        <RiDeleteBin6Line
+                                            className="text-red-600 cursor-pointer text-lg shrink-0 ml-2"
+                                            onClick={() => handleRemove(item.product_id)}
+                                        />
+                                    </div>
+                                    <p className="text-sm text-gray-500 mt-1">Price: ₹{item.price}</p>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <label className="text-sm font-medium">Qty:</label>
+                                        <input
+                                            type="number"
+                                            min={1}
+                                            className="border w-[60px] text-center text-sm p-1"
+                                            value={item.qty}
+                                            onChange={(e) => handleQtyChange(item.product_id, e.target.value)}
+                                        />
+                                    </div>
+                                    <p className="text-sm font-bold mt-2">Total: ₹{item.price * item.qty}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
 
-                        {/* TOTALS */}
-                        <div className="border p-4">
+                    {/* ── CART TOTALS ── */}
+                    <div className="mt-6 p-4">
+                        <div className="border p-4 w-full sm:max-w-sm sm:ml-auto">
                             <div className="p-3 font-bold bg-black">
                                 <h2 className="text-white uppercase">Cart Totals</h2>
                             </div>
@@ -185,14 +195,13 @@ export default function ShoppingCart() {
                                 </div>
                                 <div className="flex justify-end">
                                     <Link href={"/checkout"}>
-                                        <button className="bg-yellow-700 text-white px-3 py-2 rounded-sm uppercase">
+                                        <button className="bg-yellow-700 text-white px-3 py-2 rounded-sm uppercase w-full sm:w-auto">
                                             Proceed to Checkout
                                         </button>
                                     </Link>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </>
             )}
