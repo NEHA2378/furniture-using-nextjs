@@ -163,7 +163,7 @@ export default function ShoppingCart() {
                     </div>
 
                     {/* BOTTOM SECTION */}
-                    <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mt-5">
+                    <div className="grid grid-cols-1 gap-4 mt-5 p-4">
 
                         {/* TOTALS */}
                         <div className="border p-4 w-full">
