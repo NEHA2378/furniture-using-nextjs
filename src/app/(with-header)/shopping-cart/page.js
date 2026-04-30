@@ -166,7 +166,7 @@ export default function ShoppingCart() {
                     <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mt-5">
 
                         {/* TOTALS */}
-                        <div className="border p-4">
+                        <div className="border p-4 w-full">
                             <div className="p-3 font-bold bg-black">
                                 <h2 className="text-white uppercase">Cart Totals</h2>
                             </div>
