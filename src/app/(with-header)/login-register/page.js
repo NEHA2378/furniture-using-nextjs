@@ -16,19 +16,6 @@ export default function Auth() {
     let [otpStatus, setOtpStatus] = useState(false)
     let router = useRouter()
 
-
-
-
-    // let handleRegister=(e)=>{
-    //     e.preventDefault()
-    //     setOtpStatus(true)
-    // }
-    // let handlelogin=(e)=>{
-    //     e.preventDefault()
-    //     alert("Login Succesfully")
-    //     router.push('/')
-    // }
-
     let createUser = (e) => {
         e.preventDefault();
 

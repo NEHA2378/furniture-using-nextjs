@@ -83,7 +83,7 @@ export default function ShoppingCart() {
     const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
 
     return (
-        <div className="max-w-[1320px] mx-auto mb-10">
+        <div className="max-w-[1320px] mx-auto mb-10 overflow-x-auto">
 
             <Breadcrumb title={"My Shopping Cart"} />
 
@@ -99,7 +99,7 @@ export default function ShoppingCart() {
             ) : (
                 <>
                     <div className="w-full overflow-x-auto p-4">
-                        <table className="w-full border border-gray-300 overflow-x-auto">
+                        <table className="w-full border border-gray-300">
 
                             <thead className="border-b border-yellow-700 bg-amber-50">
                                 <tr className="font-bold">
