@@ -165,26 +165,6 @@ export default function ShoppingCart() {
                     {/* BOTTOM SECTION */}
                     <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mt-5">
 
-                        {/* COUPON */}
-                        <div className="border p-4">
-                            <div className="p-3 font-bold bg-black">
-                                <h2 className="text-white">COUPON</h2>
-                            </div>
-                            <div className="mt-5">
-                                <p className="font-semibold">Enter your coupon code if you have one.</p>
-                                <div className="mt-3 flex gap-2">
-                                    <input
-                                        className="border p-2"
-                                        type="text"
-                                        placeholder="Coupon Code"
-                                    />
-                                    <button className="bg-yellow-700 text-white px-3 py-2 rounded-sm">
-                                        APPLY COUPON
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
                         {/* TOTALS */}
                         <div className="border p-4">
                             <div className="p-3 font-bold bg-black">
