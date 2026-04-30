@@ -178,7 +178,7 @@ export default function ShoppingCart() {
 
                     {/* ── CART TOTALS ── */}
                     <div className="mt-6 p-4">
-                        <div className="border p-4 w-full sm:max-w-sm sm:ml-auto">
+                        <div className="border p-4 w-full">
                             <div className="p-3 font-bold bg-black">
                                 <h2 className="text-white uppercase">Cart Totals</h2>
                             </div>
