@@ -146,11 +146,13 @@ export default function ShoppingCart() {
                     <div className="flex flex-col gap-4 md:hidden mt-4">
                         {cart.map((item) => (
                             <div key={item._id} className="border border-gray-200 rounded-lg p-4 flex gap-4 shadow-sm">
-                                <img
-                                    src={item.image}
-                                    className="w-[80px] h-[80px] object-contain rounded"
-                                    alt={item.name}
-                                />
+                                <Link href={`/my-products/${item.product_id}`}>
+                                    <img
+                                        src={item.image}
+                                        className="w-[80px] h-[80px] object-contain rounded"
+                                        alt={item.name}
+                                    />
+                                </Link>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start">
                                         <p className="font-semibold text-sm">{item.name}</p>
