@@ -1,7 +1,7 @@
 "use client"
 import Link from 'next/link'
 import React, { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { IoMenuSharp } from "react-icons/io5";
 import { FaHeart } from "react-icons/fa";
 import { FaCaretDown } from "react-icons/fa";
@@ -10,9 +10,14 @@ import { ImCross } from "react-icons/im";
 import { GiShoppingCart } from "react-icons/gi";
 import { productData } from '@/app/(with-header)/Data/ProductData';
 import { useRouter } from 'next/navigation';
+import { fetchAndSetCartCount } from '@/app/(with-header)/shopping-cart/cart';
+import { setCartCount } from '@/app/Redux Store/cartSlice';
+import { logout } from '@/app/Redux Store/loginSlice';
+import Cookies from 'js-cookie'
 
 export default function Header() {
 
+  const dispatch = useDispatch();
   const userLogin = useSelector((state) => state.login.userLogin)
   const cartCount = useSelector((state) => state.cart.cartCount) // ✅ cart count
 
@@ -83,8 +88,23 @@ export default function Header() {
     if (e.key === "Enter") handleSearch();
   };
 
+  useEffect(() => {
+    if (userLogin) {
+      fetchAndSetCartCount(dispatch);
+    } else {
+      dispatch(setCartCount(0));
+    }
+  }, [userLogin]);
+
   //Prevent hydration mismatch
   if (!mounted) return null
+
+  const handleLogout = () => {
+    Cookies.remove('user_login');
+    dispatch(logout());
+    dispatch(setCartCount(0));
+    window.location.href = '/'
+  };
 
   return (
     <div>
@@ -103,7 +123,9 @@ export default function Header() {
                     ?
                     <Link href="/" className="hover:text-blue-600">
                       <ul className='auth d-flex justifiy-content-end'>
-                        <li>Logout</li>
+                        <li><button onClick={handleLogout} className="hover:text-blue-600">
+                          Logout
+                        </button></li>
                       </ul>
                     </Link>
                     :
@@ -266,9 +288,6 @@ export default function Header() {
                 </li>
                 <li>
                   <Link href="/contact-us" className="hover:text-blue-600">Contact Us</Link>
-                </li>
-                <li>
-                  <Link href="/product-server" className="hover:text-blue-600">Product Server</Link>
                 </li>
               </ul>
             </nav>

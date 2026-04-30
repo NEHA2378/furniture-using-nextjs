@@ -1,9 +1,11 @@
+// search/page.js
 "use client";
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { productData } from "@/app/(with-header)/Data/ProductData";
-import SearchResults from "../components/common/SearchResult";
+import SearchClient from "./SearchClient";
+import CategoryLayout from "../categories/layout";
 
 function SearchContent() {
     const searchParams = useSearchParams();
@@ -19,13 +21,15 @@ function SearchContent() {
         );
     });
 
-    return <SearchResults products={results} query={query} />;
+    return <SearchClient products={results} query={query} />;
 }
 
 export default function SearchPage() {
     return (
-        <Suspense fallback={<div className="text-center py-20 text-gray-500">Searching...</div>}>
-            <SearchContent />
-        </Suspense>
+        <CategoryLayout>
+            <Suspense fallback={<div className="text-center py-20 text-gray-500">Searching...</div>}>
+                <SearchContent />
+            </Suspense>
+        </CategoryLayout>
     );
 }

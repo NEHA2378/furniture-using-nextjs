@@ -1,3 +1,4 @@
+import { setCartCount } from "@/app/Redux Store/cartSlice";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -66,4 +67,14 @@ export const updateCartQuantity = (productId, quantity) => {
             },
         }
     );
+};
+
+export const fetchAndSetCartCount = async (dispatch) => {
+    try {
+        const res = await getCart();
+        const count = res.data?.data?.length ?? 0;
+        dispatch(setCartCount(count));
+    } catch {
+        dispatch(setCartCount(0));
+    }
 };

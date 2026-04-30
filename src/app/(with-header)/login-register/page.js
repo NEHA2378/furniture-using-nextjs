@@ -59,7 +59,7 @@ export default function Auth() {
                 }
             })
             .catch((err) => {
-                
+
                 console.log("SERVER ERROR:", err)
                 toast.error("Something went wrong")
             })
@@ -98,7 +98,7 @@ export default function Auth() {
             })
 
     }
-    
+
 
     // useEffect(() => {
     //     if (userLogin == 1) {
@@ -163,6 +163,22 @@ export default function Auth() {
                             <div>
                                 <h2 className='font-bold text-2xl mb-5'>Register</h2>
                                 <form onSubmit={createUser}>
+                                    <div className="mt-5 flex gap-4">
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="1"
+                                            /> Mr.
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="2"
+                                            /> Mrs.
+                                        </label>
+                                    </div>
                                     <div className='mt-5'>
                                         <label className='block mb-2 font-semibold'>
                                             Name
