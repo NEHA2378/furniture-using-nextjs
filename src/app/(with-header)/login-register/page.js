@@ -35,7 +35,7 @@ export default function Auth() {
                     toast.success(finalres._message)
                     Cookies.set('user_login', finalres.token)
                     dispatch(login_register(finalres.token))
-                    navigate.push('/my-dashboard');
+                    window.location.href = '/my-dashboard'  // ← replace navigate.push
                 }
                 else {
                     toast.error(finalres._message)
@@ -76,8 +76,7 @@ export default function Auth() {
                     toast.success(finalres._message)
                     Cookies.set('user_login', finalres.token)
                     dispatch(login_register(finalres.token))
-                    navigate.push('/my-dashboard');
-
+                    window.location.href = '/my-dashboard'
                 }
                 else {
                     toast.error(finalres._message)
